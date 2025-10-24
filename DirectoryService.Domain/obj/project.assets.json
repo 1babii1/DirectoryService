@@ -1,0 +1,171 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "CSharpFunctionalExtensions/3.6.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "StyleCop.Analyzers/1.1.118": {
+        "type": "package"
+      },
+      "Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Shared.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CSharpFunctionalExtensions/3.6.0": {
+      "sha512": "c+oWbfDKKjpOLPMxn/iPn1GL24YTJMtOiGfj0AsDKZ2v6/Mr6V7BfzfWLg6KqNRx3KRy3KcQE680SwvDTI/jcg==",
+      "type": "package",
+      "path": "csharpfunctionalextensions/3.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "csharpfunctionalextensions.3.6.0.nupkg.sha512",
+        "csharpfunctionalextensions.nuspec",
+        "lib/net6.0/CSharpFunctionalExtensions.dll",
+        "lib/net6.0/CSharpFunctionalExtensions.pdb",
+        "lib/net6.0/CSharpFunctionalExtensions.xml",
+        "lib/net8.0/CSharpFunctionalExtensions.dll",
+        "lib/net8.0/CSharpFunctionalExtensions.pdb",
+        "lib/net8.0/CSharpFunctionalExtensions.xml",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.dll",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.pdb",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.xml"
+      ]
+    },
+    "StyleCop.Analyzers/1.1.118": {
+      "sha512": "Onx6ovGSqXSK07n/0eM3ZusiNdB6cIlJdabQhWGgJp3Vooy9AaLS/tigeybOJAobqbtggTamoWndz72JscZBvw==",
+      "type": "package",
+      "path": "stylecop.analyzers/1.1.118",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "THIRD-PARTY-NOTICES.txt",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.CodeFixes.dll",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.dll",
+        "analyzers/dotnet/cs/de-DE/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/en-GB/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/es-MX/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/fr-FR/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/pl-PL/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/pt-BR/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/ru-RU/StyleCop.Analyzers.resources.dll",
+        "stylecop.analyzers.1.1.118.nupkg.sha512",
+        "stylecop.analyzers.nuspec",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
+    },
+    "Shared/1.0.0": {
+      "type": "project",
+      "path": "../Shared/Shared.csproj",
+      "msbuildProject": "../Shared/Shared.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "CSharpFunctionalExtensions >= 3.6.0",
+      "Shared >= 1.0.0",
+      "StyleCop.Analyzers >= 1.1.118"
+    ]
+  },
+  "packageFolders": {
+    "/home/babii/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
+      "projectName": "DirectoryService.Domain",
+      "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
+      "packagesPath": "/home/babii/.nuget/packages/",
+      "outputPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/babii/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "/usr/lib/dotnet/library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "/home/babii/homework/ASP.NET/DirectoryService/Shared/Shared.csproj": {
+              "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/Shared/Shared.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.100"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "CSharpFunctionalExtensions": {
+            "target": "Package",
+            "version": "[3.6.0, )"
+          },
+          "StyleCop.Analyzers": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[1.1.118, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.110/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

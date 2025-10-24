@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "skzEZp5BtR0=",
+  "success": true,
+  "projectFilePath": "/home/babii/homework/ASP.NET/DirectoryService/Shared/Shared.csproj",
+  "expectedPackageFiles": [
+    "/home/babii/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512"
+  ],
+  "logs": []
+}

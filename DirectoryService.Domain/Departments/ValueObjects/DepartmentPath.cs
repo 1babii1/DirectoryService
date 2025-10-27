@@ -6,7 +6,7 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public partial record DepartmentPath
 {
-    public string Value { get; init; }
+    public string Value { get; }
 
     private DepartmentPath(string value)
     {

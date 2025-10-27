@@ -5,7 +5,7 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public record DepartmentName
 {
-    public string Value { get; init; }
+    public string Value { get; }
 
     private DepartmentName(string value)
     {

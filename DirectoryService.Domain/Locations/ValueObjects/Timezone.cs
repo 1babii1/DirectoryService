@@ -6,7 +6,7 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public partial record Timezone
 {
-    public string Value { get; init; }
+    public string Value { get; }
 
     private Timezone(string value)
     {

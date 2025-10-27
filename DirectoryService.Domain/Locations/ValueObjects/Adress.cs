@@ -5,9 +5,9 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record Address
 {
-    public string Street { get; init; }
-    public string City { get; init; }
-    public string Country { get; init; }
+    public string Street { get; }
+    public string City { get; }
+    public string Country { get; }
 
     private Address(string street, string city, string country)
     {

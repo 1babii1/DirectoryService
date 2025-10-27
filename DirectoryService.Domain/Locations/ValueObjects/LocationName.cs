@@ -5,7 +5,7 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationName
 {
-    public string Value { get; init; }
+    public string Value { get; }
 
     private LocationName(string value)
     {

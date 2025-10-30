@@ -1,0 +1,12 @@
+/home/babii/homework/ASP.NET/DirectoryService/Shared/bin/Debug/net9.0/Shared.deps.json
+/home/babii/homework/ASP.NET/DirectoryService/Shared/bin/Debug/net9.0/Shared.dll
+/home/babii/homework/ASP.NET/DirectoryService/Shared/bin/Debug/net9.0/Shared.pdb
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.GeneratedMSBuildEditorConfig.editorconfig
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.AssemblyInfoInputs.cache
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.AssemblyInfo.cs
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.csproj.CoreCompileInputs.cache
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.sourcelink.json
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.dll
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/refint/Shared.dll
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/Shared.pdb
+/home/babii/homework/ASP.NET/DirectoryService/Shared/obj/Debug/net9.0/ref/Shared.dll

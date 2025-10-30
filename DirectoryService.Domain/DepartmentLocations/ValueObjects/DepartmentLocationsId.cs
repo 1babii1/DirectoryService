@@ -4,6 +4,8 @@ public record DepartmentLocationsId
 {
     public Guid Value { get; }
 
+    // EF Core
+    public DepartmentLocationsId() { }
     private DepartmentLocationsId(Guid value)
     {
         Value = value;

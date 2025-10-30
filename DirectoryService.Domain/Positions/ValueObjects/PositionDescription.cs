@@ -8,6 +8,9 @@ public record PositionDescription
 {
     public string Value { get; init; }
 
+    // EF Core
+    private PositionDescription() { }
+
     private PositionDescription(string value)
     {
         Value = value;

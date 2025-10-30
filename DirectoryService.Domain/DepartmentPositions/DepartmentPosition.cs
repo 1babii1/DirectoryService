@@ -13,6 +13,9 @@ public class DepartmentPosition
 
     public PositionId PositionId { get; private set; }
 
+    // EF Core
+    private DepartmentPosition() { }
+
     private DepartmentPosition(DepartmentPositionsId id, DepartmentId departmentId, PositionId positionId)
     {
         Id = id;

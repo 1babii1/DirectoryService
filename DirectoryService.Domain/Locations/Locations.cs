@@ -23,6 +23,9 @@ public class Locations
 
     public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; }
 
+    // EF Core
+    private Locations() { }
+
     private Locations(LocationId id, LocationName name, Timezone timezone, Address address, bool isActive,
         DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentLocation> departmentLocationsList)
     {

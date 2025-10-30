@@ -3,7 +3,6 @@
 public record DepartmentId
 {
     public Guid Value { get; }
-
     private DepartmentId(Guid value)
     {
         Value = value;

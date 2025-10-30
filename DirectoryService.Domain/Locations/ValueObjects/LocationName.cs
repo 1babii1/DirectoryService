@@ -7,6 +7,9 @@ public record LocationName
 {
     public string Value { get; }
 
+    // EF
+    public LocationName() { }
+
     private LocationName(string value)
     {
         Value = value;

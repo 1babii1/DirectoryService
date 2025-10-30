@@ -4,6 +4,9 @@ public record PositionId
 {
     public Guid Value { get; }
 
+    // EF Core
+    public PositionId() { }
+
     private PositionId(Guid value)
     {
         Value = value;

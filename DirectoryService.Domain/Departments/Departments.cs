@@ -29,6 +29,9 @@ public class Departments
 
     public IReadOnlyList<DepartmentLocation> DepartmentsLocationsList { get; private set; } = null!;
 
+    // EF Core
+    private Departments() { }
+
     public Departments(DepartmentId id, DepartmentName name, DepartmentIdentifier identifier, DepartmentPath path,
         Guid? parentId, short depth, bool isActive, DateTime createdAt, DateTime updatedAt,
         IReadOnlyList<DepartmentPosition> departmentsPositionsList,

@@ -8,6 +8,9 @@ public partial record Timezone
 {
     public string Value { get; }
 
+    // EF Core
+    private Timezone() { }
+
     private Timezone(string value)
     {
         Value = value;

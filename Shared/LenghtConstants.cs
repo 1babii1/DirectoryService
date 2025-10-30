@@ -8,4 +8,5 @@ public readonly struct LenghtConstants
     public const int LENGTH60 = 60;
     public const int LENGTH1000 = 1000;
     public const int LENGTH150 = 150;
+    public const int LENGTH500 = 500;
 }

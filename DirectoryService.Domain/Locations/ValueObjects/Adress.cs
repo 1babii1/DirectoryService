@@ -9,6 +9,9 @@ public record Address
     public string City { get; }
     public string Country { get; }
 
+    // EF Core
+    public Address() { }
+
     private Address(string street, string city, string country)
     {
         Street = street;

@@ -20,6 +20,9 @@ public class Position
 
     public IReadOnlyList<DepartmentPosition> DepartmentPositionsList { get; private set; }
 
+    // EF Core
+    private Position() { }
+
     private Position(PositionId id, PositionName name, PositionDescription description, bool isActive,
         DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentPosition> departmentPositionsList)
     {
@@ -32,7 +35,8 @@ public class Position
         DepartmentPositionsList = departmentPositionsList;
     }
 
-    public static Result<Position> Create(PositionId id, PositionName name, PositionDescription description, bool isActive,
+    public static Result<Position> Create(PositionId id, PositionName name, PositionDescription description,
+        bool isActive,
         DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentPosition> departmentPositionsList)
     {
         Position position = new(id, name, description, isActive, createdAt, updatedAt, departmentPositionsList);

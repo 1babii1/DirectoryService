@@ -6,6 +6,9 @@ namespace DirectoryService.Domain.Positions;
 
 public class Position
 {
+    //EF Core
+    public Position() { }
+
     public PositionId Id { get; private set; }
 
     public PositionName Name { get; private set; }

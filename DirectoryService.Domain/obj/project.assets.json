@@ -95,11 +95,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
+      "projectUniqueName": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
       "projectName": "DirectoryService.Domain",
-      "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
+      "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
       "packagesPath": "/home/babii/.nuget/packages/",
-      "outputPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/obj/",
+      "outputPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/DirectoryService.Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/babii/.nuget/NuGet/NuGet.Config"
@@ -115,8 +115,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/home/babii/homework/ASP.NET/DirectoryService/Shared/Shared.csproj": {
-              "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/Shared/Shared.csproj"
+            "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/Shared/Shared.csproj": {
+              "projectPath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/Shared/Shared.csproj"
             }
           }
         }

@@ -5,7 +5,7 @@ namespace DirectoryService.Domain.Positions.ValueObjects;
 
 public record PositionName
 {
-    public string Value { get; init; }
+    public string Value { get; }
 
     private PositionName(string value)
     {

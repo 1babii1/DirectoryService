@@ -7,6 +7,9 @@ namespace DirectoryService.Domain.Locations;
 
 public class Locations
 {
+    //EF Core
+    public Locations() { }
+
     public LocationId Id { get; private set; }
 
     public LocationName Name { get; private set; }

@@ -8,6 +8,9 @@ namespace DirectoryService.Domain.DepartmentLocations;
 
 public class DepartmentLocation
 {
+    //EF Core
+    public DepartmentLocation() { }
+
     public DepartmentLocationsId Id { get; private set; }
 
     public DepartmentId DepartmentId { get; private set; }

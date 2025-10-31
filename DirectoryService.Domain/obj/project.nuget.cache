@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Zs2IOB35UAc=",
+  "dgSpecHash": "f3FygQfDdzQ=",
   "success": true,
-  "projectFilePath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
+  "projectFilePath": "/home/babii/homework/ASP.NET/DirectoryService/DirectoryService/DirectoryService.Domain/DirectoryService.Domain.csproj",
   "expectedPackageFiles": [
     "/home/babii/.nuget/packages/csharpfunctionalextensions/3.6.0/csharpfunctionalextensions.3.6.0.nupkg.sha512",
     "/home/babii/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512"

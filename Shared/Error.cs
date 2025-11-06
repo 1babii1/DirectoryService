@@ -1,4 +1,6 @@
-﻿namespace Shared;
+﻿using System;
+
+namespace Shared;
 
 public class Error
 {

@@ -7,9 +7,6 @@ namespace DirectoryService.Domain.Locations;
 
 public class Locations
 {
-    //EF Core
-    public Locations() { }
-
     public LocationId Id { get; private set; }
 
     public LocationName Name { get; private set; }
@@ -26,30 +23,26 @@ public class Locations
 
     public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; }
 
-    private Locations(LocationId id, LocationName name, Timezone timezone, Address address, bool isActive,
-        DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentLocation> departmentLocationsList)
+    private Locations(LocationId id, LocationName name, Timezone timezone, Address address, IReadOnlyList<DepartmentLocation> departmentLocationsList)
     {
         Id = id;
         Name = name;
         Timezone = timezone;
         Address = address;
-        IsActive = isActive;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
-        DepartmentLocationsList = departmentLocationsList;
+        IsActive = true;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+        DepartmentLocationsList = departmentLocationsList.ToList();
     }
 
-    public Result<Locations> Create(
+    public static Result<Locations> Create(
         LocationId id,
         LocationName name,
         Timezone timezone,
         Address address,
-        bool isActive,
-        DateTime createdAt,
-        DateTime updatedAt,
         IReadOnlyList<DepartmentLocation> departmentLocationsList)
     {
-        Locations locations = new(id, name, timezone, address, isActive, createdAt, updatedAt, departmentLocationsList);
+        Locations locations = new(id, name, timezone, address, departmentLocationsList);
 
         return Result.Success(locations);
     }
@@ -65,7 +58,6 @@ public class Locations
     public void SetIsActive(bool isActive) => IsActive = isActive;
 
     public void SetCreatedAt(DateTime createdAt) => CreatedAt = createdAt;
-
 
     public void SetUpdatedAt(DateTime updatedAt) => UpdatedAt = updatedAt;
 

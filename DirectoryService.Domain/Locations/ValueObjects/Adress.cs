@@ -20,17 +20,17 @@ public record Address
     {
         if(string.IsNullOrWhiteSpace(street))
             return Error.Validation(null, "Street is required");
-        if(street.Length > LenghtConstants.LENGTH3)
+        if(street.Length < LenghtConstants.LENGTH3)
             return Error.Validation("length.is.invalid", "Location street cannot be more than 3 characters");
 
         if(string.IsNullOrWhiteSpace(city))
             return Error.Validation(null, "City is required");
-        if(city.Length > LenghtConstants.LENGTH3)
+        if(city.Length < LenghtConstants.LENGTH3)
             return Error.Validation("length.is.invalid", "Location city cannot be more than 3 characters");
 
         if(string.IsNullOrWhiteSpace(country))
             return Error.Validation(null, "Country is required");
-        if(country.Length > LenghtConstants.LENGTH3)
+        if(country.Length < LenghtConstants.LENGTH3)
             return Error.Validation("length.is.invalid", "Location country cannot be more than 3 characters");
 
         Address adress = new(street, city, country);

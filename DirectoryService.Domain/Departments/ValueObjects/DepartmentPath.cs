@@ -32,4 +32,4 @@ public partial record DepartmentPath
 
     [GeneratedRegex(@"^[a-zA-Z.-]+$")]
     private static partial Regex LatinDotHyphenRegex();
-};
+}

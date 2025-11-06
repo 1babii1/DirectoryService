@@ -3,14 +3,10 @@ using DirectoryService.Domain.DepartmentLocations.ValueObjects;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 
-
 namespace DirectoryService.Domain.DepartmentLocations;
 
 public class DepartmentLocation
 {
-    //EF Core
-    public DepartmentLocation() { }
-
     public DepartmentLocationsId Id { get; private set; }
 
     public DepartmentId DepartmentId { get; private set; }

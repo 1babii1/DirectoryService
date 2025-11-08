@@ -51,11 +51,9 @@ public class CreateLocationHandle
 
         Timezone locationTimezone = locationTimezoneResult.Value;
 
-        Locations locations = Locations.Create(locationId, locationName, locationTimezone, locationAddress,
-            new List<DepartmentLocation>()).Value;
+        Locations locations = new Locations(locationId, locationName, locationTimezone, locationAddress,
+            new List<DepartmentLocation>());
 
-        await _locationsRepository.Add(locations, cancellationToken);
-
-        return locationId.Value;
+        return await _locationsRepository.Add(locations, cancellationToken);
     }
 }

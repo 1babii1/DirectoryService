@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DirectoryService.Domain.Locations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres;
@@ -15,7 +16,7 @@ public class DirectoryServiceDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_connectionString);
-        optionsBuilder.UseLoggerFactory(_loggerFactory);
+        optionsBuilder.UseLoggerFactory(LoggerFactory);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,5 +24,7 @@ public class DirectoryServiceDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
     }
 
-    private ILoggerFactory _loggerFactory => LoggerFactory.Create(builder => builder.AddConsole());
+    public DbSet<Locations> Location => Set<Locations>();
+
+    private ILoggerFactory LoggerFactory => Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
 }

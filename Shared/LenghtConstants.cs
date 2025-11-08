@@ -1,6 +1,6 @@
-﻿namespace DirectoryService.Domain;
+namespace Shared;
 
-public readonly struct LenghtConstants
+public static class LenghtConstants
 {
     public const int LENGTH120 = 120;
     public const int LENGTH3 = 3;

@@ -7,9 +7,6 @@ namespace DirectoryService.Domain.Departments;
 
 public class Departments
 {
-    //EF Core
-    public Departments() { }
-
     public DepartmentId Id { get; private set; }
 
     public DepartmentName Name { get; private set; }

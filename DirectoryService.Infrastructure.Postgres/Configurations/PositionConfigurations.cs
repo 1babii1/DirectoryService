@@ -3,6 +3,7 @@ using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared;
 
 namespace DirectoryService.Infrastructure.Postgres.Configurations;
 
@@ -25,7 +26,7 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
             .HasColumnName("name");
 
         builder.Property(p => p.Description)
-            .HasConversion(p => p.Value, description => PositionDescription.Create(description).Value)
+            .HasConversion(p => p!.Value, description => PositionDescription.Create(description).Value)
             .HasMaxLength(LenghtConstants.LENGTH1000)
             .HasColumnName("description");
 

@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService", "Directo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Infrastructure.Postgres", "DirectoryService.Infrastructure.Postgres\DirectoryService.Infrastructure.Postgres.csproj", "{AB45CED9-0063-4216-99AE-3E7141B220C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Application", "DirectoryService.Application\DirectoryService.Application.csproj", "{35ADFBE0-F97E-43F9-B3F2-4AD33EFC67FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Contracts", "DirectoryService.Contracts\DirectoryService.Contracts.csproj", "{3F209ED6-0C9D-4956-98C4-595473000BA8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{AB45CED9-0063-4216-99AE-3E7141B220C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB45CED9-0063-4216-99AE-3E7141B220C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB45CED9-0063-4216-99AE-3E7141B220C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35ADFBE0-F97E-43F9-B3F2-4AD33EFC67FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35ADFBE0-F97E-43F9-B3F2-4AD33EFC67FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35ADFBE0-F97E-43F9-B3F2-4AD33EFC67FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35ADFBE0-F97E-43F9-B3F2-4AD33EFC67FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

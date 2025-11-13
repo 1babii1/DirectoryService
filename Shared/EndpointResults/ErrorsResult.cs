@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
-
 namespace Shared.EndpointResults;
 
 public class ErrorsResult : IResult
@@ -49,9 +48,13 @@ public class ErrorsResult : IResult
         return errorType switch
         {
             ErrorType.VALIDATION => StatusCodes.Status400BadRequest,
+
             ErrorType.NOT_FOUND => StatusCodes.Status404NotFound,
+
             ErrorType.CONFLICT => StatusCodes.Status409Conflict,
+
             ErrorType.FAILURE => StatusCodes.Status500InternalServerError,
+
             _ => StatusCodes.Status500InternalServerError,
         };
     }

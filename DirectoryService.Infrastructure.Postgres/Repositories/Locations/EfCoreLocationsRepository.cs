@@ -1,11 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application;
 using DirectoryService.Application.Database;
-using DirectoryService.Domain.Locations;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace DirectoryService.Infrastructure.Postgres.Repositories;
+namespace DirectoryService.Infrastructure.Postgres.Repositories.Locations;
 
 public class EfCoreLocationsRepository : ILocationsRepository
 {
@@ -18,7 +16,9 @@ public class EfCoreLocationsRepository : ILocationsRepository
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Add(Locations locations, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Add(
+        Domain.Locations.Locations locations,
+        CancellationToken cancellationToken)
     {
         try
         {

@@ -1,9 +1,12 @@
-﻿namespace DirectoryService.Domain.Departments.ValueObjects;
+﻿using System.Text.Json.Serialization;
+
+namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public record DepartmentId
 {
     public Guid Value { get; }
 
+    [JsonConstructor]
     private DepartmentId(Guid value)
     {
         Value = value;

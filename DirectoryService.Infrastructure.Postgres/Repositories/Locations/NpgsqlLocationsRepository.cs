@@ -1,13 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
-using DirectoryService.Application;
 using DirectoryService.Application.Database;
-using DirectoryService.Domain.Locations;
 using DirectoryService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace DirectoryService.Infrastructure.Postgres.Repositories;
+namespace DirectoryService.Infrastructure.Postgres.Repositories.Locations;
 
 public class NpgsqlLocationsRepository : ILocationsRepository
 {
@@ -20,7 +18,7 @@ public class NpgsqlLocationsRepository : ILocationsRepository
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Add(Locations locations, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Add(Domain.Locations.Locations locations, CancellationToken cancellationToken)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 

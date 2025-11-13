@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using Shared;
 
 namespace DirectoryService.Domain.Positions.ValueObjects;
@@ -7,6 +8,7 @@ public record PositionName
 {
     public string Value { get; }
 
+    [JsonConstructor]
     private PositionName(string value)
     {
         Value = value;

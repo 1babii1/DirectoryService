@@ -5,13 +5,13 @@ namespace DirectoryService.Domain.Locations;
 
 public class Locations
 {
-    public LocationId Id { get; private set; }
+    public LocationId Id { get; private set; } = null!;
 
-    public LocationName Name { get; private set; }
+    public LocationName Name { get; private set; } = null!;
 
-    public Timezone Timezone { get; private set; }
+    public Timezone Timezone { get; private set; } = null!;
 
-    public Address Address { get; private set; }
+    public Address Address { get; private set; } = null!;
 
     public bool IsActive { get; private set; }
 
@@ -19,9 +19,13 @@ public class Locations
 
     public DateTime UpdatedAt { get; private set; }
 
-    public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; }
+    public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; } = null!;
 
-    public Locations(LocationId id, LocationName name, Timezone timezone, Address address, IReadOnlyList<DepartmentLocation> departmentLocationsList)
+    // EF Core
+    public Locations() { }
+
+    public Locations(LocationId id, LocationName name, Timezone timezone, Address address,
+        IReadOnlyList<DepartmentLocation> departmentLocationsList)
     {
         Id = id;
         Name = name;

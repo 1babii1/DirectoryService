@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
 using Shared;
 
@@ -7,7 +8,7 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 public partial record DepartmentIdentifier
 {
     public string Value { get; }
-
+    [JsonConstructor]
     private DepartmentIdentifier(string value)
     {
         Value = value;

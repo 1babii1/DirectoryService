@@ -1,4 +1,5 @@
 ﻿using DirectoryService.Application;
+using DirectoryService.Application.Location;
 using DirectoryService.Contracts.Location;
 using Microsoft.AspNetCore.Mvc;
 using Shared;

@@ -1,4 +1,6 @@
-﻿using DirectoryService.Domain.Locations;
+﻿using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -26,5 +28,10 @@ public class DirectoryServiceDbContext : DbContext
 
     public DbSet<Locations> Location => Set<Locations>();
 
-    private ILoggerFactory LoggerFactory => Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
+    public DbSet<Position> Position => Set<Position>();
+
+    public DbSet<Departments> Department => Set<Departments>();
+
+    private ILoggerFactory LoggerFactory =>
+        Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
 }

@@ -7,7 +7,7 @@ using DirectoryService.Domain.Locations.ValueObjects;
 using Shared;
 using Address = DirectoryService.Domain.Locations.ValueObjects.Address;
 
-namespace DirectoryService.Application;
+namespace DirectoryService.Application.Location;
 
 public class CreateLocationHandle
 {

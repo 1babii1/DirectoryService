@@ -1,10 +1,13 @@
-﻿namespace DirectoryService.Domain.DepartmentLocations.ValueObjects;
+﻿using System.Text.Json.Serialization;
+
+namespace DirectoryService.Domain.DepartmentLocations.ValueObjects;
 
 public record DepartmentLocationsId
 {
     public Guid Value { get; }
 
-    private DepartmentLocationsId(Guid value)
+    [JsonConstructor]
+    public DepartmentLocationsId(Guid value)
     {
         Value = value;
     }

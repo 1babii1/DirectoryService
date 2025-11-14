@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using CSharpFunctionalExtensions;
 using Shared;
 
@@ -8,6 +9,7 @@ public record PositionDescription
 {
     public string Value { get; }
 
+    [JsonConstructor]
     private PositionDescription(string value)
     {
         Value = value;

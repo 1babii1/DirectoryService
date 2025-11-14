@@ -1,9 +1,11 @@
-﻿namespace DirectoryService.Domain.Locations.ValueObjects;
+﻿using System.Text.Json.Serialization;
+
+namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationId
 {
     public Guid Value { get; }
-
+    [JsonConstructor]
     private LocationId(Guid value)
     {
         Value = value;

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations.ValueObjects;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
@@ -13,6 +14,7 @@ public class DepartmentLocation
 
     public LocationId LocationId { get; private set; }
 
+    [JsonConstructor]
     private DepartmentLocation(DepartmentLocationsId id, DepartmentId departmentId, LocationId locationId)
     {
         Id = id;

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using Shared;
 
 namespace DirectoryService.Domain.Departments.ValueObjects;
@@ -6,7 +7,7 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 public record DepartmentName
 {
     public string Value { get; }
-
+    [JsonConstructor]
     private DepartmentName(string value)
     {
         Value = value;

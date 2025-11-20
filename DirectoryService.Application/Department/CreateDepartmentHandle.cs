@@ -11,17 +11,32 @@ namespace DirectoryService.Application.Department;
 public class CreateDepartmentHandle
 {
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly CreateDepartmentValidation _validator;
     private readonly ILogger<CreateDepartmentHandle> _logger;
 
-    public CreateDepartmentHandle(IDepartmentRepository departmentRepository, ILogger<CreateDepartmentHandle> logger)
+    public CreateDepartmentHandle(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
+        ILogger<CreateDepartmentHandle> logger)
     {
         _departmentRepository = departmentRepository;
+        _validator = validator;
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreateDepartmentRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Handle(CreateDepartmentCommand createDepartmentCommandRequest, CancellationToken cancellationToken)
     {
         DepartmentId departmentId = DepartmentId.NewDepartmentId();
+        CreateDepartmentRequest request = createDepartmentCommandRequest.request;
+
+        // Валидация входных данных
+        var validateResult = await _validator.ValidateAsync(request);
+        if (!validateResult.IsValid)
+        {
+            _logger.LogError("Failed to validate department");
+            var error = validateResult.Errors.First();
+            var errorResult =
+                Error.Validation(error.ErrorCode ?? "validate.fail", error.ErrorMessage, error.PropertyName);
+            return errorResult;
+        }
 
         var departmentNameResult = DepartmentName.Create(request.Name.Value);
         if (departmentNameResult.IsFailure)

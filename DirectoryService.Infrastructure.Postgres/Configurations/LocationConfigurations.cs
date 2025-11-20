@@ -25,6 +25,10 @@ public class LocationConfigurations : IEntityTypeConfiguration<Locations>
             .HasMaxLength(LenghtConstants.LENGTH120)
             .HasColumnName("name");
 
+        builder.HasIndex(l => l.Name)
+            .IsUnique()
+            .HasDatabaseName("ux_locations_name");
+
         builder.Property(l => l.Timezone)
             .HasConversion(l => l.Value, timezone => Timezone.Create(timezone).Value)
             .IsRequired()
@@ -46,6 +50,10 @@ public class LocationConfigurations : IEntityTypeConfiguration<Locations>
                 .IsRequired()
                 .HasMaxLength(LenghtConstants.LENGTH60)
                 .HasColumnName("country");
+
+            adressBuilder.HasIndex(a => new { a.Street, a.City, a.Country })
+                .IsUnique()
+                .HasDatabaseName("ux_locations_address");
         });
 
         builder.Property(l => l.IsActive)

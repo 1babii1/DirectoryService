@@ -46,5 +46,11 @@ public class EfCoreLocationsRepository : ILocationsRepository
 
             return Error.Failure("location.insert", "Fail to insert location");
         }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error adding location");
+
+            return Error.Failure("location.insert", "Fail to insert location");
+        }
     }
 }

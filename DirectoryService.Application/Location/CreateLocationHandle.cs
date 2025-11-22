@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Location;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Locations;
@@ -7,6 +8,7 @@ using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Address = DirectoryService.Domain.Locations.ValueObjects.Address;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace DirectoryService.Application.Location;
 
@@ -31,14 +33,11 @@ public class CreateLocationHandle
         CreateLocationRequest locationRequest = createLocationCommand.locationRequest;
 
         // Валидация входных данных
-        var validateResult = await _validator.ValidateAsync(locationRequest);
+        ValidationResult validateResult = await _validator.ValidateAsync(locationRequest);
         if (!validateResult.IsValid)
         {
             _logger.LogError("Failed to validate location");
-            var error = validateResult.Errors.First();
-            var errorResult =
-                Error.Validation(error.ErrorCode ?? "validate.fail", error.ErrorMessage, error.PropertyName);
-            return errorResult;
+            return validateResult.ToError();
         }
 
         var locationNameResult = LocationName.Create(locationRequest.Name);

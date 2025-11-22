@@ -1,8 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Department;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -28,14 +30,11 @@ public class CreateDepartmentHandle
         CreateDepartmentRequest request = createDepartmentCommandRequest.request;
 
         // Валидация входных данных
-        var validateResult = await _validator.ValidateAsync(request);
+        ValidationResult validateResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validateResult.IsValid)
         {
             _logger.LogError("Failed to validate department");
-            var error = validateResult.Errors.First();
-            var errorResult =
-                Error.Validation(error.ErrorCode ?? "validate.fail", error.ErrorMessage, error.PropertyName);
-            return errorResult;
+            return validateResult.ToError();
         }
 
         var departmentNameResult = DepartmentName.Create(request.Name.Value);

@@ -1,5 +1,6 @@
-﻿using DirectoryService.Domain.Positions.ValueObjects;
+﻿using DirectoryService.Domain.Departments.ValueObjects;
+using DirectoryService.Domain.Positions.ValueObjects;
 
 namespace DirectoryService.Contracts.Position;
 
-public record CreatePositionRequest(PositionName Name, PositionDescription? Description);
+public record CreatePositionRequest(PositionName Name, PositionDescription? Description, IEnumerable<DepartmentId> DepartmentIds);

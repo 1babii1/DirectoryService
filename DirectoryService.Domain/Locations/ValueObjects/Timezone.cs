@@ -16,10 +16,10 @@ public partial record Timezone
     public static Result<Timezone, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return Error.Validation(null, "Timezone is required");
+            return Error.Validation(null!, "Timezone is required");
 
         if(!TimezoneRegex().IsMatch(value))
-            return Error.Validation(null, "Timezone is invalid");
+            return Error.Validation(null!, "Timezone is invalid");
 
         Timezone timezone = new(value);
 

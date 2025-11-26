@@ -17,7 +17,7 @@ public record PositionName
     public static Result<PositionName, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Error.Validation(null, "Position name is required");
+            return Error.Validation(null!, "Position name is required");
 
         string trimmed = value.Trim();
 

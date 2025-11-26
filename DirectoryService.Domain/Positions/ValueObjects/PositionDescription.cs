@@ -18,7 +18,7 @@ public record PositionDescription
     public static Result<PositionDescription, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Error.Validation(null, "Position description cannot be empty");
+            return Error.Validation(null!, "Position description cannot be empty");
 
         string trimmed = value.Trim();
 

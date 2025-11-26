@@ -18,20 +18,25 @@ public record Address
 
     public static Result<Address, Error> Create(string street, string city, string country)
     {
+        var errors = new List<ErrorMessages>();
+
         if(string.IsNullOrWhiteSpace(street))
-            return Error.Validation(null, "Street is required");
-        if(street.Length < LenghtConstants.LENGTH3)
-            return Error.Validation("length.is.invalid", "Location street cannot be more than 3 characters");
+            errors.Add(new ErrorMessages(null!, "Street is required"));
+        else if(street.Length < LenghtConstants.LENGTH3)
+            errors.Add(new ErrorMessages("length.is.invalid", "Location street cannot be less than 3 characters"));
 
         if(string.IsNullOrWhiteSpace(city))
-            return Error.Validation(null, "City is required");
-        if(city.Length < LenghtConstants.LENGTH3)
-            return Error.Validation("length.is.invalid", "Location city cannot be more than 3 characters");
+            errors.Add(new ErrorMessages(null!, "City is required"));
+        else if(city.Length < LenghtConstants.LENGTH3)
+            errors.Add(new ErrorMessages("length.is.invalid", "Location city cannot be less than 3 characters"));
 
         if(string.IsNullOrWhiteSpace(country))
-            return Error.Validation(null, "Country is required");
-        if(country.Length < LenghtConstants.LENGTH3)
-            return Error.Validation("length.is.invalid", "Location country cannot be more than 3 characters");
+            errors.Add(new ErrorMessages(null!, "Country is required"));
+        else if(country.Length < LenghtConstants.LENGTH3)
+            errors.Add(new ErrorMessages("length.is.invalid", "Location country cannot be less than 3 characters"));
+
+        if(errors.Any())
+            return Result.Failure<Address, Error>(Error.Validation(errors));
 
         Address adress = new(street, city, country);
 

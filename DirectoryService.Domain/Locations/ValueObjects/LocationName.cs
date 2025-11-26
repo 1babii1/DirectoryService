@@ -15,7 +15,7 @@ public record LocationName
     public static Result<LocationName, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return Error.Validation(null, "Location name is required");
+            return Error.Validation(null!, "Location name is required");
 
         string trimmed = value.Trim();
 

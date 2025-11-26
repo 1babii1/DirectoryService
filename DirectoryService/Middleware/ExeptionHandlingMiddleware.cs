@@ -1,4 +1,8 @@
-﻿namespace DirectoryService.Middleware;
+﻿using System.Text.Json;
+using FluentValidation;
+using Shared;
+
+namespace DirectoryService.Middleware;
 
 public class ExeptionHandlingMiddleware
 {
@@ -21,8 +25,40 @@ public class ExeptionHandlingMiddleware
         catch (Exception e)
         {
             _logger.LogError(e, "Error in middleware");
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsync("Internal server error");
+            await HandleExceptionAsync(context, e);
         }
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        _logger.LogError(exception, exception.Message);
+
+        int code;
+        Error[] errors;
+
+        switch (exception)
+        {
+            case FluentValidation.ValidationException valEx:
+                code = StatusCodes.Status400BadRequest;
+                errors = valEx.Errors
+                    .GroupBy(x => x.PropertyName)
+                    .Select(g => Error.Failure(g.Key ?? null!, string.Join("; ", g.Select(x => x.ErrorMessage))))
+                    .ToArray();
+                break;
+
+            case BadHttpRequestException badReq:
+                code = StatusCodes.Status400BadRequest;
+                errors = new[] { Error.Failure(null!, badReq.Message) };
+                break;
+
+            default:
+                code = StatusCodes.Status500InternalServerError;
+                errors = new[] { Error.Failure(null!, "something went wrong") };
+                break;
+        }
+
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = code;
+        await context.Response.WriteAsync(JsonSerializer.Serialize(errors));
     }
 }

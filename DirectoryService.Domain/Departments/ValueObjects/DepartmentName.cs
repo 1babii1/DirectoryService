@@ -16,7 +16,7 @@ public record DepartmentName
     public static Result<DepartmentName, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return Error.Validation(null, "Department name is required");
+            return Error.Validation(null!, "Department name is required");
 
         string trimmed = value.Trim();
 

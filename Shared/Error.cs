@@ -1,12 +1,16 @@
-﻿namespace Shared;
+﻿using System.Text.Json.Serialization;
+
+namespace Shared;
 
 public record ErrorMessages(string code, string message, string? invalidField = null);
 
 public class Error
 {
-    public IReadOnlyList<ErrorMessages> Messages { get; } = [];
+    public IReadOnlyList<ErrorMessages> Messages { get; set; } = [];
 
-    public ErrorType Type { get; }
+    public ErrorType Type { get; set; }
+
+    public Error() { }
 
     private Error(IEnumerable<ErrorMessages> messages, ErrorType type)
     {

@@ -33,7 +33,7 @@ builder.Services.AddHttpLogging();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidation>();
 
-builder.Services.AddSingleton<IConfigureOptions<JsonOptions>, injectJSONSerializeConfig>();
+builder.Services.AddSingleton<IConfigureOptions<JsonOptions>, InjectJSONSerializeConfig>();
 
 builder.Services.AddScoped<DirectoryServiceDbContext>(_ =>
     new DirectoryServiceDbContext(builder.Configuration.GetConnectionString("DirectoryServiceDb")!));
@@ -52,6 +52,10 @@ builder.Services.AddScoped<CreateLocationHandle>();
 builder.Services.AddScoped<CreatePositionHandle>();
 
 builder.Services.AddScoped<CreateDepartmentHandle>();
+
+builder.Services.AddScoped<GetIdsDepartment>();
+
+builder.Services.AddScoped<GetIdsLocation>();
 
 var app = builder.Build();
 

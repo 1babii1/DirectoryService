@@ -18,7 +18,8 @@ public class CreateLocationHandle
     private readonly CreateLocationValidation _validator;
     private readonly ILogger<CreateLocationHandle> _logger;
 
-    public CreateLocationHandle(ILocationsRepository locationsRepository, CreateLocationValidation validator, ILogger<CreateLocationHandle> logger)
+    public CreateLocationHandle(ILocationsRepository locationsRepository, CreateLocationValidation validator,
+        ILogger<CreateLocationHandle> logger)
     {
         _locationsRepository = locationsRepository;
         _validator = validator;
@@ -33,10 +34,12 @@ public class CreateLocationHandle
         CreateLocationRequest locationRequest = createLocationCommand.locationRequest;
 
         // Валидация входных данных
-        ValidationResult validateResult = await _validator.ValidateAsync(locationRequest);
+        _logger.LogInformation("Validating department");
+        ValidationResult validateResult = await _validator.ValidateAsync(locationRequest, cancellationToken);
         if (!validateResult.IsValid)
         {
-            _logger.LogError("Failed to validate location");
+            _logger.LogError("Failed to validate location111");
+
             return validateResult.ToError();
         }
 

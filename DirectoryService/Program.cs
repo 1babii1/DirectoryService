@@ -8,6 +8,7 @@ using DirectoryService.Infrastructure.Postgres.Repositories.Departments;
 using DirectoryService.Infrastructure.Postgres.Repositories.Locations;
 using DirectoryService.Infrastructure.Postgres.Repositories.Positions;
 using DirectoryService.Middleware;
+using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -30,7 +31,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpLogging();
 
-builder.Services.AddSingleton<IConfigureOptions<JsonOptions>, injectJSONSerializeConfig>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidation>();
+
+builder.Services.AddSingleton<IConfigureOptions<JsonOptions>, InjectJSONSerializeConfig>();
 
 builder.Services.AddScoped<DirectoryServiceDbContext>(_ =>
     new DirectoryServiceDbContext(builder.Configuration.GetConnectionString("DirectoryServiceDb")!));

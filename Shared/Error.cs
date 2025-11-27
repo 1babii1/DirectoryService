@@ -1,42 +1,48 @@
-﻿namespace Shared;
+﻿using System.Text.Json.Serialization;
+
+namespace Shared;
+
+public record ErrorMessages(string code, string message, string? invalidField = null);
 
 public class Error
 {
-    public string Code { get; }
+    public IReadOnlyList<ErrorMessages> Messages { get; set; } = [];
 
-    public string Message { get; }
+    public ErrorType Type { get; set; }
 
-    public ErrorType Type { get; }
+    public Error() { }
 
-    public string? InvalidField { get; }
-
-    private Error(string code, string message, ErrorType type, string? invalidField = null)
+    private Error(IEnumerable<ErrorMessages> messages, ErrorType type)
     {
-        Code = code;
-        Message = message;
+        Messages = messages.ToArray();
         Type = type;
-        InvalidField = invalidField;
     }
 
-    public static Error None() => new(string.Empty, string.Empty, ErrorType.NONE);
+    public static Error Validation(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessages(code, message, invalidField)], ErrorType.VALIDATION);
 
-    public static Error NotFound(
-        string? code,
-        string message,
-        Guid? id) => new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
+    public static Error NotFound(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessages(code, message, invalidField)], ErrorType.NOT_FOUND);
 
-    public static Error Validation(
-        string? code,
-        string message,
-        string? invalidField = null) => new(code ?? "value.is.invalid", message, ErrorType.VALIDATION, invalidField);
+    public static Error Conflict(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessages(code, message, invalidField)], ErrorType.CONFLICT);
 
-    public static Error Conflict(
-        string? code,
-        string message) => new(code ?? "value.is.conflict", message, ErrorType.CONFLICT);
+    public static Error Failure(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessages(code, message, invalidField)], ErrorType.FAILURE);
 
-    public static Error Failure(
-        string? code,
-        string message) => new(code ?? "failure", message, ErrorType.FAILURE);
+    public static Error None() => new([], ErrorType.NONE);
+
+    public static Error Validation(params IEnumerable<ErrorMessages> messages) =>
+        new(messages, ErrorType.VALIDATION);
+
+    public static Error NotFound(params IEnumerable<ErrorMessages> messages) =>
+        new(messages, ErrorType.NOT_FOUND);
+
+    public static Error Conflict(params IEnumerable<ErrorMessages> messages) =>
+        new(messages, ErrorType.CONFLICT);
+
+    public static Error Failure(params IEnumerable<ErrorMessages> messages) =>
+        new(messages, ErrorType.FAILURE);
 
     // Хотим из Error сделать Errors
     public Errors ToErrors() => this;

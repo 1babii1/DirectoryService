@@ -1,8 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Department;
+using DirectoryService.Application.Position.Errors;
+using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Position;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -11,16 +15,51 @@ namespace DirectoryService.Application.Position;
 public class CreatePositionHandle
 {
     private readonly IPositionRepository _positionRepository;
+    private readonly IDepartmentRepository _departmentRepository;
+    private readonly CreatePositionValidation _validator;
     private readonly ILogger<CreatePositionHandle> _logger;
 
-    public CreatePositionHandle(IPositionRepository positionRepository, ILogger<CreatePositionHandle> logger)
+    public CreatePositionHandle(
+        IPositionRepository positionRepository,
+        CreatePositionValidation validator,
+        ILogger<CreatePositionHandle> logger, IDepartmentRepository departmentRepository)
     {
         _positionRepository = positionRepository;
+        _validator = validator;
         _logger = logger;
+        _departmentRepository = departmentRepository;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreatePositionRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Handle(
+        CreatePositionCommand positionCommand,
+        CancellationToken cancellationToken)
     {
+        CreatePositionRequest request = positionCommand.request;
+
+        // Валидация входных данных
+        _logger.LogInformation("Validating department");
+        ValidationResult validateResult = await _validator.ValidateAsync(positionCommand, cancellationToken);
+        if (!validateResult.IsValid)
+        {
+            _logger.LogError("Failed to validate location111");
+
+            return validateResult.ToError();
+        }
+
+        // Проверка на существование департамента
+        var departmentIdsNotFound = await _departmentRepository.GetDepartmentsIds(request.DepartmentIds, cancellationToken);
+        if (departmentIdsNotFound.IsFailure)
+        {
+            _logger.LogError("Failed to get departments ids" + departmentIdsNotFound.Error.Messages);
+            return departmentIdsNotFound.Error;
+        }
+
+        if (departmentIdsNotFound.Value.Any())
+        {
+            _logger.LogError("Departments not found" + string.Join(", ", departmentIdsNotFound.Value));
+            return PositionErrors.DepartmentIdsNotFound();
+        }
+
         PositionId positionId = PositionId.NewPositionId();
 
         var positionNameResult = PositionName.Create(request.Name.Value);

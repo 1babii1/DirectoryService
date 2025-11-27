@@ -12,5 +12,5 @@ public class DepartmentController : ControllerBase
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(
         [FromServices] CreateDepartmentHandle handler,
-        CreateDepartmentRequest request, CancellationToken cancellationToken) => await handler.Handle(request, cancellationToken);
+        CreateDepartmentCommand request, CancellationToken cancellationToken) => await handler.Handle(request, cancellationToken);
 }

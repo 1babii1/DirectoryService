@@ -1,8 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Department.Errors;
+using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Department;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -11,17 +14,47 @@ namespace DirectoryService.Application.Department;
 public class CreateDepartmentHandle
 {
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly ILocationsRepository _locationRepository;
+    private readonly CreateDepartmentValidation _validator;
     private readonly ILogger<CreateDepartmentHandle> _logger;
 
-    public CreateDepartmentHandle(IDepartmentRepository departmentRepository, ILogger<CreateDepartmentHandle> logger)
+    public CreateDepartmentHandle(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
+        ILogger<CreateDepartmentHandle> logger, ILocationsRepository locationRepository)
     {
         _departmentRepository = departmentRepository;
+        _validator = validator;
         _logger = logger;
+        _locationRepository = locationRepository;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreateDepartmentRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Handle(
+        CreateDepartmentCommand createDepartmentCommandRequest,
+        CancellationToken cancellationToken)
     {
         DepartmentId departmentId = DepartmentId.NewDepartmentId();
+        CreateDepartmentRequest request = createDepartmentCommandRequest.request;
+
+        // Валидация входных данных
+        ValidationResult validateResult = await _validator.ValidateAsync(request);
+        if (!validateResult.IsValid)
+        {
+            _logger.LogError("Failed to validate department");
+            return validateResult.ToError();
+        }
+
+        // Проверка на существование локации
+        var locationIdsNotFound = await _locationRepository.GetLocationsIds(request.LocationsIds, cancellationToken);
+        if (locationIdsNotFound.IsFailure)
+        {
+            _logger.LogError("Failed to get locations ids " + locationIdsNotFound.Error.Messages);
+            return locationIdsNotFound.Error;
+        }
+
+        if (locationIdsNotFound.Value.Any())
+        {
+            _logger.LogError("Locations not found " + string.Join(", ", locationIdsNotFound.Value));
+            return DepartmentErrors.LocationsIdsNotFound();
+        }
 
         var departmentNameResult = DepartmentName.Create(request.Name.Value);
         if (departmentNameResult.IsFailure)
@@ -42,10 +75,10 @@ public class CreateDepartmentHandle
         DepartmentIdentifier departmentIdentifier = departmentIdentifierResult.Value;
 
         var department = request.department is null
-            ? Departments.CreateParent(departmentName, departmentIdentifier, request.DepartmentsLocations,
+            ? Departments.CreateParent(departmentName, departmentIdentifier, request.LocationsIds,
                 request.DepartmentId)
             : Departments.CreateChild(departmentName, departmentIdentifier, request.department, request.Depth ?? 0,
-                request.DepartmentsLocations, request.DepartmentId);
+                request.LocationsIds, request.DepartmentId);
 
         if (department.IsFailure)
         {

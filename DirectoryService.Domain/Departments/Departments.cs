@@ -2,6 +2,7 @@
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObjects;
+using DirectoryService.Domain.Locations.ValueObjects;
 using Shared;
 
 namespace DirectoryService.Domain.Departments;
@@ -36,8 +37,7 @@ public sealed class Departments
     public Departments() { }
 
     private Departments(DepartmentId id, DepartmentName name, DepartmentIdentifier identifier, DepartmentPath path,
-        short depth, DepartmentId? parentId,
-        IEnumerable<DepartmentLocation> departmentsLocationsList)
+        short depth, DepartmentId? parentId)
     {
         Id = id;
         Name = name;
@@ -48,13 +48,12 @@ public sealed class Departments
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
-        DepartmentsLocationsList = departmentsLocationsList.ToList();
     }
 
     public static Result<Departments, Error> CreateParent(DepartmentName name, DepartmentIdentifier identifier,
-        IEnumerable<DepartmentLocation> departmentsLocations, DepartmentId? departmentId = null)
+        IEnumerable<LocationId> locationIds, DepartmentId? departmentId = null)
     {
-        IEnumerable<DepartmentLocation> departmentLocationsList = departmentsLocations.ToList();
+        IEnumerable<LocationId> departmentLocationsList = locationIds.ToList();
         if (!departmentLocationsList.Any())
         {
             return Error.Validation("department.location", "To create a department, you must have a location");
@@ -70,8 +69,7 @@ public sealed class Departments
         DepartmentPath departmentPath = departmentPathResult.Value;
 
         Departments departments = new(departmentId ?? DepartmentId.NewDepartmentId(), name, identifier, departmentPath,
-            0, null,
-            departmentLocationsList);
+            0, null);
 
         return Result.Success<Departments, Error>(departments);
     }
@@ -81,10 +79,10 @@ public sealed class Departments
         DepartmentIdentifier identifier,
         Departments department,
         short depth,
-        IEnumerable<DepartmentLocation> departmentsLocations,
+        IEnumerable<LocationId> locationIds,
         DepartmentId? departmentId = null)
     {
-        IEnumerable<DepartmentLocation> departmentLocationsList = departmentsLocations.ToList();
+        IEnumerable<LocationId> departmentLocationsList = locationIds.ToList();
         if (!departmentLocationsList.Any())
         {
             return Error.Validation("department.location", "To create a department, you must have a location");
@@ -94,7 +92,6 @@ public sealed class Departments
 
         if (pathResult.IsFailure)
         {
-            // обработка ошибки, например:
             return Error.Validation("department.path", "Invalid department path");
         }
 
@@ -103,7 +100,7 @@ public sealed class Departments
         DepartmentId parentId = DepartmentId.FromValue(department.Id.Value);
 
         Departments departments = new(departmentId ?? DepartmentId.NewDepartmentId(), name, identifier, pathChild,
-            depth, parentId, departmentLocationsList);
+            depth, parentId);
 
         return Result.Success<Departments, Error>(departments);
     }

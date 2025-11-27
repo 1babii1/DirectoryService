@@ -1,6 +1,8 @@
 ﻿using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.DepartmentLocations.ValueObjects;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
+using DirectoryService.Domain.Locations.ValueObjects;
 
 namespace DirectoryService.Contracts.Department;
 
@@ -9,5 +11,5 @@ public record CreateDepartmentRequest(
     DepartmentIdentifier Identifier,
     Departments? department,
     short? Depth,
-    IEnumerable<DepartmentLocation> DepartmentsLocations,
+    IEnumerable<LocationId> LocationsIds,
     DepartmentId? DepartmentId);

@@ -14,5 +14,5 @@ public class LocationController : ControllerBase
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(
         [FromServices] CreateLocationHandle handler,
-        CreateLocationRequest request, CancellationToken cancellationToken) => await handler.Handle(request, cancellationToken);
+        CreateLocationCommand request, CancellationToken cancellationToken) => await handler.Handle(request, cancellationToken);
 }

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -11,6 +12,7 @@ public class NpgsqlLocationsRepository : ILocationsRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILogger<NpgsqlLocationsRepository> _logger;
+    private ILocationsRepository _locationsRepositoryImplementation;
 
     public NpgsqlLocationsRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlLocationsRepository> logger)
     {
@@ -58,5 +60,27 @@ public class NpgsqlLocationsRepository : ILocationsRepository
 
             return Error.Failure("location.insert", "Fail to insert location");
         }
+    }
+
+    public async Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(
+        IEnumerable<LocationId> locationIds,
+        CancellationToken cancellationToken)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        const string selectLocationIdsSql = """
+                                            SELECT id
+                                            FROM locations
+                                            WHERE id = ANY(@LocationIds)
+                                            """;
+
+        var selectLocationIdsParams = new
+        {
+            LocationIds = locationIds,
+        };
+
+        var missedIds = await connection.QueryAsync<LocationId>(selectLocationIdsSql, selectLocationIdsParams);
+
+        return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
     }
 }

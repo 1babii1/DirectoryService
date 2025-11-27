@@ -53,10 +53,6 @@ builder.Services.AddScoped<CreatePositionHandle>();
 
 builder.Services.AddScoped<CreateDepartmentHandle>();
 
-builder.Services.AddScoped<GetIdsDepartment>();
-
-builder.Services.AddScoped<GetIdsLocation>();
-
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

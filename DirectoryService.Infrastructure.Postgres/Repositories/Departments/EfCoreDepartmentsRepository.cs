@@ -42,14 +42,19 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
         }
     }
 
-    public async Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(
+        IEnumerable<DepartmentId> departmentIds,
+        CancellationToken cancellationToken)
     {
         try
         {
             var allDepartmentIds = await _dbContext.Department
                 .Select(d => d.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
-            return allDepartmentIds;
+
+            var missIds = departmentIds.Except(allDepartmentIds);
+
+            return Result.Success<IEnumerable<DepartmentId>, Error>(missIds);
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
         {

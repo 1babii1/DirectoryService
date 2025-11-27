@@ -62,5 +62,25 @@ public class NpgsqlLocationsRepository : ILocationsRepository
         }
     }
 
-    public Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(CancellationToken cancellationToken) => throw new NotImplementedException();
+    public async Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(
+        IEnumerable<LocationId> locationIds,
+        CancellationToken cancellationToken)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        const string selectLocationIdsSql = """
+                                            SELECT id
+                                            FROM locations
+                                            WHERE id = ANY(@LocationIds)
+                                            """;
+
+        var selectLocationIdsParams = new
+        {
+            LocationIds = locationIds,
+        };
+
+        var missedIds = await connection.QueryAsync<LocationId>(selectLocationIdsSql, selectLocationIdsParams);
+
+        return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
+    }
 }

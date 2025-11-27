@@ -56,14 +56,19 @@ public class EfCoreLocationsRepository : ILocationsRepository
         }
     }
 
-    public async Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(
+        IEnumerable<LocationId> locationIds,
+        CancellationToken cancellationToken)
     {
         try
         {
             var allLocationIds = await _dbContext.Location
                 .Select(l => l.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
-            return allLocationIds;
+
+            var missedIds = locationIds.Except(allLocationIds);
+
+            return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
         {

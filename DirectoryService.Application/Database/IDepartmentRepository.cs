@@ -8,5 +8,8 @@ namespace DirectoryService.Application.Database;
 public interface IDepartmentRepository
 {
     Task<Result<Guid, Error>> Add(Departments department, CancellationToken cancellationToken = default);
-    Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(CancellationToken cancellationToken);
+
+    Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(
+        IEnumerable<DepartmentId> departmentIds,
+        CancellationToken cancellationToken);
 }

@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Department.Errors;
-using DirectoryService.Application.Location;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Department;
 using DirectoryService.Domain.Departments;
@@ -15,17 +14,17 @@ namespace DirectoryService.Application.Department;
 public class CreateDepartmentHandle
 {
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly ILocationsRepository _locationRepository;
     private readonly CreateDepartmentValidation _validator;
     private readonly ILogger<CreateDepartmentHandle> _logger;
-    private readonly GetIdsLocation _getIdsLocation;
 
     public CreateDepartmentHandle(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
-        ILogger<CreateDepartmentHandle> logger, GetIdsLocation getIdsLocation)
+        ILogger<CreateDepartmentHandle> logger, ILocationsRepository locationRepository)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
         _logger = logger;
-        _getIdsLocation = getIdsLocation;
+        _locationRepository = locationRepository;
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -44,17 +43,16 @@ public class CreateDepartmentHandle
         }
 
         // Проверка на существование локации
-        var allLocationIds = await _getIdsLocation.GetLocationsIds(cancellationToken);
-        if (allLocationIds.IsFailure)
+        var locationIdsNotFound = await _locationRepository.GetLocationsIds(request.LocationsIds, cancellationToken);
+        if (locationIdsNotFound.IsFailure)
         {
-            _logger.LogError("Failed to get locations ids");
-            return allLocationIds.Error;
+            _logger.LogError("Failed to get locations ids " + locationIdsNotFound.Error.Messages);
+            return locationIdsNotFound.Error;
         }
 
-        var locationsIdsNotFound = request.LocationsIds.Except(allLocationIds.Value);
-        if (locationsIdsNotFound.Any())
+        if (locationIdsNotFound.Value.Any())
         {
-            _logger.LogError("Failed to get locations ids");
+            _logger.LogError("Locations not found " + string.Join(", ", locationIdsNotFound.Value));
             return DepartmentErrors.LocationsIdsNotFound();
         }
 
@@ -66,7 +64,6 @@ public class CreateDepartmentHandle
         }
 
         DepartmentName departmentName = departmentNameResult.Value;
-
 
         var departmentIdentifierResult = DepartmentIdentifier.Create(request.Identifier.Value);
         if (departmentIdentifierResult.IsFailure)

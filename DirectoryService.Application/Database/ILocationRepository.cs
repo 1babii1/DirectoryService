@@ -9,5 +9,5 @@ public interface ILocationsRepository
 {
     Task<Result<Guid, Error>> Add(Locations locations, CancellationToken cancellationToken = default);
 
-    Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(CancellationToken cancellationToken);
+    Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(IEnumerable<LocationId> locationIds, CancellationToken cancellationToken);
 }

@@ -15,18 +15,19 @@ namespace DirectoryService.Application.Position;
 public class CreatePositionHandle
 {
     private readonly IPositionRepository _positionRepository;
-    private readonly GetIdsDepartment _getIdsDepartment;
+    private readonly IDepartmentRepository _departmentRepository;
     private readonly CreatePositionValidation _validator;
     private readonly ILogger<CreatePositionHandle> _logger;
 
-    public CreatePositionHandle(IPositionRepository positionRepository, GetIdsDepartment getIdsDepartment,
+    public CreatePositionHandle(
+        IPositionRepository positionRepository,
         CreatePositionValidation validator,
-        ILogger<CreatePositionHandle> logger)
+        ILogger<CreatePositionHandle> logger, IDepartmentRepository departmentRepository)
     {
         _positionRepository = positionRepository;
-        _getIdsDepartment = getIdsDepartment;
         _validator = validator;
         _logger = logger;
+        _departmentRepository = departmentRepository;
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -46,17 +47,16 @@ public class CreatePositionHandle
         }
 
         // Проверка на существование департамента
-        var allDepartmentIds = await _getIdsDepartment.GetDepartmentsIds(cancellationToken);
-        if (allDepartmentIds.IsFailure)
+        var departmentIdsNotFound = await _departmentRepository.GetDepartmentsIds(request.DepartmentIds, cancellationToken);
+        if (departmentIdsNotFound.IsFailure)
         {
-            _logger.LogError("Failed to get locations ids");
-            return allDepartmentIds.Error;
+            _logger.LogError("Failed to get departments ids" + departmentIdsNotFound.Error.Messages);
+            return departmentIdsNotFound.Error;
         }
 
-        var locationsIdsNotFound = request.DepartmentIds.Except(allDepartmentIds.Value);
-        if (locationsIdsNotFound.Any())
+        if (departmentIdsNotFound.Value.Any())
         {
-            _logger.LogError("Failed to get locations ids");
+            _logger.LogError("Departments not found" + string.Join(", ", departmentIdsNotFound.Value));
             return PositionErrors.DepartmentIdsNotFound();
         }
 

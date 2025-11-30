@@ -62,19 +62,30 @@ public class EfCoreLocationsRepository : ILocationsRepository
     {
         try
         {
+            IEnumerable<LocationId> enumerable = locationIds.ToList();
+            Console.WriteLine("locationIds: " + string.Join(", ", enumerable.Select(li => li.Value.ToString())));
             var allLocationIds = await _dbContext.Location
+                .Where(l => enumerable.Contains(l.Id))
                 .Select(l => l.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
 
-            var missedIds = locationIds.Except(allLocationIds);
+            var missedIds = enumerable.Except(allLocationIds);
 
             return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
         {
-            _logger.LogError(ex, "Error getting locations ids");
+            if (pgEx.SqlState == "23503")
+            {
+                return Error.Conflict("foreign.key", "Related entity not found");
+            }
 
-            return Error.Failure("location.get", "Fail to get locations ids");
+            if (pgEx.SqlState == "23505")
+            {
+                return Error.Conflict("unique.constraint", "Duplicate value");
+            }
+
+            return Error.Failure("location.update", "Database error");
         }
         catch (Exception e)
         {

@@ -44,11 +44,10 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
 
             return Result.Success<IReadOnlyList<Domain.Departments.Departments>, Error>(departments);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+        catch (NpgsqlException ex)
         {
-            _logger.LogError(ex, "Error getting departments by ids");
-
-            return Error.Failure("departments.get", "Fail to get departments by ids");
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", string.Join(", ", departmentIds.Select(id => id.Value)));
+            return Error.Failure("department.get", "Database error");
         }
         catch (Exception e)
         {
@@ -75,11 +74,10 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
 
             return Result.Success<Domain.Departments.Departments, Error>(department);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+        catch (NpgsqlException ex)
         {
-            _logger.LogError(ex, "Error getting department by id");
-
-            return Error.Failure("department.get", "Fail to get department by id");
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", departmentIdId.Value);
+            return Error.Failure("department.get", "Database error");
         }
         catch (Exception e)
         {

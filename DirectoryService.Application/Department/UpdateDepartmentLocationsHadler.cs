@@ -68,6 +68,13 @@ public class UpdateDepartmentLocationsHadler
             return locations.Error;
         }
 
+        if (locations.Value.Any())
+        {
+            var missed = string.Join(", ", locations.Value.Select(id => id.Value));
+            _logger.LogError("Missing locations: {Missed}", missed);
+            return Error.Validation("locations", $"Locations not found: {missed}");
+        }
+
         var departmentlocation =
             commandRequest.Request.locationIds.Select(id =>
                 DepartmentLocation.Create(null, department.Value.Id, id).Value);

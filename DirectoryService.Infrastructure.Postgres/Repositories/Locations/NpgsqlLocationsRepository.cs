@@ -75,9 +75,17 @@ public class NpgsqlLocationsRepository : ILocationsRepository
                                             WHERE id = ANY(@LocationIds)
                                             """;
 
-        var selectLocationIdsParams = new { LocationIds = locationIds, };
+        // Передаём массив Guid в SQL
+        IEnumerable<LocationId> enumerable = locationIds.ToList();
+        var idsArray = enumerable.Select(li => li.Value).ToArray();
 
-        var missedIds = await connection.QueryAsync<LocationId>(selectLocationIdsSql, selectLocationIdsParams);
+        var existingGuids = await connection.QueryAsync<Guid>(selectLocationIdsSql, new { LocationIds = idsArray });
+
+        // Маппим обратно в LocationId
+        var existingIds = existingGuids.Select(g => LocationId.FromValue(g)).ToList();
+
+        // missed = те, которых нет
+        var missedIds = enumerable.Except(existingIds);
 
         return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
     }

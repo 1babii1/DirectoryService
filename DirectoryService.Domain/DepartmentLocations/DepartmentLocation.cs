@@ -22,10 +22,10 @@ public class DepartmentLocation
         LocationId = locationId;
     }
 
-    public static Result<DepartmentLocation> Create(DepartmentLocationsId id, DepartmentId departmentId,
+    public static Result<DepartmentLocation> Create(DepartmentLocationsId? id, DepartmentId departmentId,
         LocationId locationId)
     {
-        DepartmentLocation departmentLocation = new(id, departmentId, locationId);
+        DepartmentLocation departmentLocation = new(id ?? DepartmentLocationsId.NewDepartmentLocationsId(), departmentId, locationId);
 
         return Result.Success(departmentLocation);
     }

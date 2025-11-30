@@ -12,7 +12,6 @@ public class NpgsqlLocationsRepository : ILocationsRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILogger<NpgsqlLocationsRepository> _logger;
-    private ILocationsRepository _locationsRepositoryImplementation;
 
     public NpgsqlLocationsRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlLocationsRepository> logger)
     {
@@ -20,7 +19,9 @@ public class NpgsqlLocationsRepository : ILocationsRepository
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Add(Domain.Locations.Locations locations, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Add(
+        Domain.Locations.Locations locations,
+        CancellationToken cancellationToken)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
@@ -74,10 +75,7 @@ public class NpgsqlLocationsRepository : ILocationsRepository
                                             WHERE id = ANY(@LocationIds)
                                             """;
 
-        var selectLocationIdsParams = new
-        {
-            LocationIds = locationIds,
-        };
+        var selectLocationIdsParams = new { LocationIds = locationIds, };
 
         var missedIds = await connection.QueryAsync<LocationId>(selectLocationIdsSql, selectLocationIdsParams);
 

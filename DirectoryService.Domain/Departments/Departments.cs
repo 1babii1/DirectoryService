@@ -124,6 +124,6 @@ public sealed class Departments
     public void SetDepartmentsPositionsList(IReadOnlyList<DepartmentPosition> departmentsPositionsList) =>
         DepartmentsPositionsList = departmentsPositionsList;
 
-    public void SetDepartmentsLocationsList(IReadOnlyList<DepartmentLocation> departmentsLocationsList) =>
-        DepartmentsLocationsList = departmentsLocationsList;
+    public void SetDepartmentsLocationsList(IEnumerable<DepartmentLocation> departmentsLocationsList) =>
+        DepartmentsLocationsList = departmentsLocationsList.ToList();
 }

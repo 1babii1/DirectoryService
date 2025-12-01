@@ -12,7 +12,6 @@ public class NpgsqlLocationsRepository : ILocationsRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILogger<NpgsqlLocationsRepository> _logger;
-    private ILocationsRepository _locationsRepositoryImplementation;
 
     public NpgsqlLocationsRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlLocationsRepository> logger)
     {
@@ -20,7 +19,9 @@ public class NpgsqlLocationsRepository : ILocationsRepository
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Add(Domain.Locations.Locations locations, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Add(
+        Domain.Locations.Locations locations,
+        CancellationToken cancellationToken)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
@@ -74,12 +75,17 @@ public class NpgsqlLocationsRepository : ILocationsRepository
                                             WHERE id = ANY(@LocationIds)
                                             """;
 
-        var selectLocationIdsParams = new
-        {
-            LocationIds = locationIds,
-        };
+        // Передаём массив Guid в SQL
+        IEnumerable<LocationId> enumerable = locationIds.ToList();
+        var idsArray = enumerable.Select(li => li.Value).ToArray();
 
-        var missedIds = await connection.QueryAsync<LocationId>(selectLocationIdsSql, selectLocationIdsParams);
+        var existingGuids = await connection.QueryAsync<Guid>(selectLocationIdsSql, new { LocationIds = idsArray });
+
+        // Маппим обратно в LocationId
+        var existingIds = existingGuids.Select(g => LocationId.FromValue(g)).ToList();
+
+        // missed = те, которых нет
+        var missedIds = enumerable.Except(existingIds);
 
         return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
     }

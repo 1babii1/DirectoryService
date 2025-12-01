@@ -12,7 +12,6 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
 {
     private readonly DirectoryServiceDbContext _dbContext;
     private readonly ILogger<EfCoreDepartmentsRepository> _logger;
-    private IDepartmentRepository _departmentRepositoryImplementation;
 
     public EfCoreDepartmentsRepository(
         DirectoryServiceDbContext dbContext,
@@ -20,6 +19,72 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         _dbContext = dbContext;
         _logger = logger;
+    }
+
+    public async Task Save()
+    {
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Result<IReadOnlyList<Domain.Departments.Departments>, Error>> GetById(
+        IReadOnlyList<DepartmentId> departmentIds,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var departments = await _dbContext.Department
+                .Where(d => departmentIds.Contains(d.Id))
+                .ToListAsync(cancellationToken: cancellationToken);
+
+            if (departments.Count == 0)
+            {
+                _logger.LogError("Departments not found");
+                return Error.NotFound("departments.get", "Departments not found");
+            }
+
+            return Result.Success<IReadOnlyList<Domain.Departments.Departments>, Error>(departments);
+        }
+        catch (NpgsqlException ex)
+        {
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", string.Join(", ", departmentIds.Select(id => id.Value)));
+            return Error.Failure("department.get", "Database error");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting departments by ids");
+
+            return Error.Failure("departments.get", "Fail to get departments by ids");
+        }
+    }
+
+    public async Task<Result<Domain.Departments.Departments, Error>> GetById(
+        DepartmentId departmentIdId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var department = await _dbContext.Department
+                .Include(d => d.DepartmentsLocationsList)
+                .FirstOrDefaultAsync(d => d.Id == departmentIdId, cancellationToken: cancellationToken);
+            if (department is null)
+            {
+                _logger.LogError("Department not found");
+                return Error.NotFound("department.get", "Department not found");
+            }
+
+            return Result.Success<Domain.Departments.Departments, Error>(department);
+        }
+        catch (NpgsqlException ex)
+        {
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", departmentIdId.Value);
+            return Error.Failure("department.get", "Database error");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting department by id");
+
+            return Error.Failure("department.get", "Fail to get department by id");
+        }
     }
 
     public async Task<Result<Guid, Error>> Add(

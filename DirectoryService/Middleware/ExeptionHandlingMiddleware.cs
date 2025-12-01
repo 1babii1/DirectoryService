@@ -59,6 +59,6 @@ public class ExeptionHandlingMiddleware
 
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = code;
-        await context.Response.WriteAsync(JsonSerializer.Serialize(errors));
+        await context.Response.WriteAsJsonAsync(errors);
     }
 }

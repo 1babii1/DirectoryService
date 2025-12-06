@@ -6,7 +6,7 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public partial record DepartmentPath
 {
-    private const char _separator = '/';
+    private const char _separator = '.';
     public string Value { get; }
 
     private DepartmentPath(string value)
@@ -19,7 +19,7 @@ public partial record DepartmentPath
         if (string.IsNullOrWhiteSpace(value))
             return Error.Validation(null!, "Department path is required");
 
-        string trimmed = value.Trim().Replace(" ", "-");
+        string trimmed = value.Trim();
 
         if (!LatinDotHyphenRegex().IsMatch(trimmed))
         {
@@ -36,7 +36,7 @@ public partial record DepartmentPath
         if (string.IsNullOrWhiteSpace(value))
             return Error.Validation(null!, "Department path is required");
 
-        string trimmed = value.Trim().Replace(" ", "-");
+        string trimmed = value.Trim();
 
         if (!LatinDotHyphenRegex().IsMatch(trimmed))
         {
@@ -46,6 +46,25 @@ public partial record DepartmentPath
         string childPath = parentPath.Value + _separator + trimmed;
 
         DepartmentPath result = new(childPath);
+
+        return Result.Success<DepartmentPath, Error>(result);
+    }
+
+    public static Result<DepartmentPath, Error> Create(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return Error.Validation(null!, "Department path is invalid");
+        }
+
+        string trimmed = value.Trim();
+
+        if (!LatinDotHyphenRegex().IsMatch(trimmed))
+        {
+            return Error.Validation(null!, "Department path is invalid");
+        }
+
+        DepartmentPath result = new(trimmed);
 
         return Result.Success<DepartmentPath, Error>(result);
     }

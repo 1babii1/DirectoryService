@@ -33,13 +33,15 @@ public class DepartmentConfigurations : IEntityTypeConfiguration<Departments>
             .HasMaxLength(LenghtConstants.LENGTH150)
             .HasColumnName("identifier");
 
-        builder
-            .ComplexProperty(d => d.Path, nb =>
-            {
-                nb.Property(n => n.Value)
-                    .HasColumnName("path")
-                    .IsRequired();
-            });
+        builder.Property(d => d.Path)
+            .HasConversion(d => d.Value, path => DepartmentPath.Create(path).Value)
+            .HasColumnType("ltree")
+            .HasColumnName("path")
+            .IsRequired();
+
+        builder.HasIndex(d => d.Path)
+            .HasMethod("gist")
+            .HasDatabaseName("idx_departments_path");
 
         builder
             .Property(d => d.ParentId)

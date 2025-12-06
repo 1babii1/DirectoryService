@@ -1,5 +1,8 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json;
+using CSharpFunctionalExtensions;
+using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Contracts.Response.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -46,7 +49,8 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
         }
         catch (NpgsqlException ex)
         {
-            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", string.Join(", ", departmentIds.Select(id => id.Value)));
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}",
+                string.Join(", ", departmentIds.Select(id => id.Value)));
             return Error.Failure("department.get", "Database error");
         }
         catch (Exception e)
@@ -58,14 +62,46 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     }
 
     public async Task<Result<Domain.Departments.Departments, Error>> GetById(
-        DepartmentId departmentIdId,
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var departments = await _dbContext.Department
+                .Where(d => d.Id == departmentId)
+                .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+            if (departments is null)
+            {
+                _logger.LogError("Departments not found");
+                return Error.NotFound("departments.get", "Departments not found");
+            }
+
+            return Result.Success<Domain.Departments.Departments, Error>(departments);
+        }
+        catch (NpgsqlException ex)
+        {
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}",
+                string.Join(", ", departmentId));
+            return Error.Failure("department.get", "Database error");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting departments by ids");
+
+            return Error.Failure("departments.get", "Fail to get departments by ids");
+        }
+    }
+
+    public async Task<Result<Domain.Departments.Departments, Error>> GetByIdIncludeLocations(
+        DepartmentId departmentId,
         CancellationToken cancellationToken)
     {
         try
         {
             var department = await _dbContext.Department
                 .Include(d => d.DepartmentsLocationsList)
-                .FirstOrDefaultAsync(d => d.Id == departmentIdId, cancellationToken: cancellationToken);
+                .FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken: cancellationToken);
             if (department is null)
             {
                 _logger.LogError("Department not found");
@@ -76,7 +112,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
         }
         catch (NpgsqlException ex)
         {
-            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", departmentIdId.Value);
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", departmentId.Value);
             return Error.Failure("department.get", "Database error");
         }
         catch (Exception e)
@@ -85,6 +121,109 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
 
             return Error.Failure("department.get", "Fail to get department by id");
         }
+    }
+
+    public async Task<Result<Domain.Departments.Departments, Error>> GetByIdWithLock(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var department = await _dbContext.Department
+                .FromSql($"SELECT * FROM departments WHERE id = {departmentId.Value} FOR UPDATE")
+                .FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
+            if (department is null)
+            {
+                _logger.LogError("Department not found");
+                return Error.NotFound("department.get", "Department not found");
+            }
+
+            return Result.Success<Domain.Departments.Departments, Error>(department);
+        }
+        catch (NpgsqlException ex)
+        {
+            _logger.LogError(ex, "Database error getting department by id: {DepartmentId}", departmentId.Value);
+            return Error.Failure("department.get", "Database error");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting department by id");
+
+            return Error.Failure("department.get", "Fail to get department by id");
+        }
+    }
+
+    public async Task<UnitResult<Error>> LockChildrenByPath(
+        DepartmentPath path,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT * FROM departments WHERE path <@ {path.Value}::ltree AND path != {path.Value}::ltree FOR UPDATE");
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<List<Guid>> GetChildrenIdsAsync(DepartmentPath parentPath, CancellationToken ct)
+    {
+        var childrenIds = await _dbContext.Department
+            .FromSqlInterpolated($"SELECT id FROM departments WHERE path <@ {parentPath.Value}::ltree")
+            .Select(d => d.Id.Value)
+            .ToListAsync(ct);
+        return childrenIds;
+    }
+
+    public async Task<List<DepartmentDto>> GetHierarchy(
+        DepartmentPath newDepartmentPath,
+        CancellationToken cancellationToken = default)
+    {
+        const string dapperSql = """
+                                 SELECT * FROM departments 
+                                 WHERE path <@ @path::ltree 
+                                 ORDER BY depth
+                                 """;
+
+        var dbCon = _dbContext.Database.GetDbConnection();
+
+        var departmentRaws = (await dbCon.QueryAsync<DepartmentDto>(
+                dapperSql,
+                new { path = newDepartmentPath.Value }))
+            .ToList();
+
+        var departmentDict = departmentRaws.ToDictionary(d => d.Id);
+        var roots = new List<DepartmentDto>();
+
+        foreach (var row in departmentRaws)
+        {
+            if (row.ParentId.HasValue && departmentDict.TryGetValue(row.ParentId.Value, out var department))
+            {
+                department.Children.Add(departmentDict[row.Id]);
+            }
+            else
+            {
+                roots.Add(departmentDict[row.Id]);
+            }
+        }
+
+        return roots;
+    }
+
+    public async Task<UnitResult<Error>> UpdateHierarchy(
+        DepartmentId newParentId,
+        DepartmentPath newParentPath,
+        DepartmentPath oldPath,
+        short depth,
+        CancellationToken cancellationToken)
+    {
+        await _dbContext.Database.ExecuteSqlInterpolatedAsync($@"
+    UPDATE departments SET parent_id = {newParentId.Value} WHERE path = {oldPath.Value}::ltree");
+
+        await _dbContext.Database.ExecuteSqlInterpolatedAsync($@"
+    UPDATE departments 
+    SET path = {newParentPath.Value}::ltree || subpath(path, nlevel({oldPath.Value}::ltree)-1),
+        depth = depth - {depth}
+    WHERE path <@ {oldPath.Value}::ltree");
+
+        return UnitResult.Success<Error>();
     }
 
     public async Task<Result<Guid, Error>> Add(

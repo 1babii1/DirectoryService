@@ -66,6 +66,7 @@ public class EfCoreLocationsRepository : ILocationsRepository
             Console.WriteLine("locationIds: " + string.Join(", ", enumerable.Select(li => li.Value.ToString())));
             var allLocationIds = await _dbContext.Location
                 .Where(l => enumerable.Contains(l.Id))
+                .Where(l => l.IsActive == true)
                 .Select(l => l.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
 

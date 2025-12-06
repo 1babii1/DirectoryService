@@ -27,34 +27,48 @@ public class UpdateDepartmentLocationsHadler
     private readonly ILocationsRepository _locationRepository;
     private readonly UpdateDepartmentLocationsValidation _validator;
     private readonly ILogger<UpdateDepartmentLocationsHadler> _logger;
+    private readonly ITransactionManager _transactionManager;
 
     public UpdateDepartmentLocationsHadler(
         IDepartmentRepository departmentRepository,
         ILogger<UpdateDepartmentLocationsHadler> logger, ILocationsRepository locationRepository,
-        UpdateDepartmentLocationsValidation validator)
+        UpdateDepartmentLocationsValidation validator, ITransactionManager transactionManager)
     {
         _departmentRepository = departmentRepository;
         _logger = logger;
         _locationRepository = locationRepository;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<DepartmentId, Error>> Handle(
         UpdateDepartmentLocationsCommand commandRequest,
         CancellationToken cancellationToken)
     {
+        var transactionScopeResult =
+            await _transactionManager.BeginTransactionAsync(cancellationToken);
+
+        if (transactionScopeResult.IsFailure)
+        {
+            return transactionScopeResult.Error;
+        }
+
+        using var transactionScope = transactionScopeResult.Value;
+
         // Валидация данных запроса
         var validateResult = await _validator.ValidateAsync(commandRequest, cancellationToken);
         if (!validateResult.IsValid)
         {
+            transactionScope.Rollback();
             _logger.LogError("Failed to validate update department locations");
             return validateResult.ToError();
         }
 
         // Находим департамент
-        var department = await _departmentRepository.GetById(commandRequest.Request.departmentId, cancellationToken);
+        var department = await _departmentRepository.GetByIdIncludeLocations(commandRequest.Request.departmentId, cancellationToken);
         if (department.IsFailure)
         {
+            transactionScope.Rollback();
             _logger.LogError("Failed to get department by id");
             return department.Error;
         }
@@ -64,12 +78,14 @@ public class UpdateDepartmentLocationsHadler
             await _locationRepository.GetLocationsIds(commandRequest.Request.locationIds, cancellationToken);
         if (locations.IsFailure)
         {
+            transactionScope.Rollback();
             _logger.LogError("Failed to get locations by ids");
             return locations.Error;
         }
 
         if (locations.Value.Any())
         {
+            transactionScope.Rollback();
             var missed = string.Join(", ", locations.Value.Select(id => id.Value));
             _logger.LogError("Missing locations: {Missed}", missed);
             return Error.Validation("locations", $"Locations not found: {missed}");
@@ -81,7 +97,20 @@ public class UpdateDepartmentLocationsHadler
 
         department.Value.SetDepartmentsLocationsList(departmentlocation);
 
-        await _departmentRepository.Save();
+        var result = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed save async update department");
+            return result.Error;
+        }
+
+        var commitResult = transactionScope.Commit();
+        if (commitResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            _logger.LogError("Failed to commit transaction");
+            return commitResult.Error;
+        }
 
         return department.Value.Id;
     }

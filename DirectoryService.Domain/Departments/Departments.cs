@@ -78,7 +78,6 @@ public sealed class Departments
         DepartmentName name,
         DepartmentIdentifier identifier,
         Departments department,
-        short depth,
         IEnumerable<LocationId> locationIds,
         DepartmentId? departmentId = null)
     {
@@ -100,7 +99,7 @@ public sealed class Departments
         DepartmentId parentId = DepartmentId.FromValue(department.Id.Value);
 
         Departments departments = new(departmentId ?? DepartmentId.NewDepartmentId(), name, identifier, pathChild,
-            depth, parentId);
+            (short)(department.Depth + 1), parentId);
 
         return Result.Success<Departments, Error>(departments);
     }

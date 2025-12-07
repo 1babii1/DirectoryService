@@ -62,20 +62,10 @@ public class CreateDepartmentHandle
     {
         CreateDepartmentRequest request = createDepartmentCommandRequest.request;
 
-        var transactionScopeResult =
-            await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-
-        using var transactionScope = transactionScopeResult.Value;
-
         // Валидация входных данных
         ValidationResult validateResult = await _validator.ValidateAsync(request);
         if (!validateResult.IsValid)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to validate department");
             return validateResult.ToError();
         }
@@ -84,7 +74,6 @@ public class CreateDepartmentHandle
         var locationIdsNotFound = await _locationRepository.GetLocationsIds(request.LocationsIds, cancellationToken);
         if (locationIdsNotFound.IsFailure)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to get locations ids " + locationIdsNotFound.Error.Messages);
             return locationIdsNotFound.Error;
         }
@@ -93,10 +82,10 @@ public class CreateDepartmentHandle
         Departments? departmentFromDB = null;
         if (request.ParentDepartmentId != null)
         {
-            var getResult = await _departmentRepository.GetByIdIncludeLocations(request.ParentDepartmentId, cancellationToken);
+            var getResult =
+                await _departmentRepository.GetByIdIncludeLocations(request.ParentDepartmentId, cancellationToken);
             if (getResult.IsFailure)
             {
-                transactionScope.Rollback();
                 _logger.LogError("Parent department not found " + getResult.Error.Messages);
                 return Error.Failure("department.notfound", "Parent department not found");
             }
@@ -106,7 +95,6 @@ public class CreateDepartmentHandle
 
         if (locationIdsNotFound.Value.Any())
         {
-            transactionScope.Rollback();
             _logger.LogError("Locations not found " + string.Join(", ", locationIdsNotFound.Value));
             return DepartmentErrors.LocationsIdsNotFound();
         }
@@ -114,7 +102,6 @@ public class CreateDepartmentHandle
         var departmentNameResult = DepartmentName.Create(request.Name.Value);
         if (departmentNameResult.IsFailure)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to create department name");
             return departmentNameResult.Error;
         }
@@ -124,7 +111,6 @@ public class CreateDepartmentHandle
         var departmentIdentifierResult = DepartmentIdentifier.Create(request.Identifier.Value);
         if (departmentIdentifierResult.IsFailure)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to create department identifier");
             return departmentIdentifierResult.Error;
         }
@@ -136,29 +122,25 @@ public class CreateDepartmentHandle
                 request.DepartmentId)
             : Departments.CreateChild(departmentName, departmentIdentifier, departmentFromDB,
                 request.LocationsIds, request.DepartmentId);
-
         if (department.IsFailure)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to create department");
             return department.Error;
         }
 
         var result = await _departmentRepository.Add(department.Value, cancellationToken);
         _logger.LogInformation("Department created successfully");
-
         if (result.IsFailure)
         {
-            transactionScope.Rollback();
             _logger.LogError("Failed to create department");
             return result.Error;
         }
 
-        var commitResult = transactionScope.Commit();
-        if (commitResult.IsFailure)
+        var save = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (save.IsFailure)
         {
-            _logger.LogError("Failed to commit transaction");
-            return commitResult.Error;
+            _logger.LogError("Failed to create department");
+            return save.Error;
         }
 
         return result;

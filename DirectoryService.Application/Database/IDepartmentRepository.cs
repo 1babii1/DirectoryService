@@ -32,8 +32,6 @@ public interface IDepartmentRepository
         DepartmentPath newDepartmentPath,
         CancellationToken cancellationToken = default);
 
-    Task<List<Guid>> GetChildrenIdsAsync(DepartmentPath parentPath, CancellationToken ct);
-
     Task<UnitResult<Error>> LockChildrenByPath(
         DepartmentPath path,
         CancellationToken cancellationToken = default);
@@ -41,6 +39,7 @@ public interface IDepartmentRepository
     Task<UnitResult<Error>> UpdateHierarchy(
         DepartmentId newParentId,
         DepartmentPath newParentPath,
+        DepartmentId currentId,
         DepartmentPath oldPath,
         short depth,
         CancellationToken cancellationToken);

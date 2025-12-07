@@ -163,15 +163,6 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
         return UnitResult.Success<Error>();
     }
 
-    public async Task<List<Guid>> GetChildrenIdsAsync(DepartmentPath parentPath, CancellationToken ct)
-    {
-        var childrenIds = await _dbContext.Department
-            .FromSqlInterpolated($"SELECT id FROM departments WHERE path <@ {parentPath.Value}::ltree")
-            .Select(d => d.Id.Value)
-            .ToListAsync(ct);
-        return childrenIds;
-    }
-
     public async Task<List<DepartmentDto>> GetHierarchy(
         DepartmentPath newDepartmentPath,
         CancellationToken cancellationToken = default)
@@ -210,6 +201,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     public async Task<UnitResult<Error>> UpdateHierarchy(
         DepartmentId newParentId,
         DepartmentPath newParentPath,
+        DepartmentId currentId,
         DepartmentPath oldPath,
         short depth,
         CancellationToken cancellationToken)
@@ -221,7 +213,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     UPDATE departments 
     SET path = {newParentPath.Value}::ltree || subpath(path, nlevel({oldPath.Value}::ltree)-1),
         depth = depth - {depth}
-    WHERE path <@ {oldPath.Value}::ltree");
+    WHERE path <@ {oldPath.Value}::ltree AND id != {currentId.Value}");
 
         return UnitResult.Success<Error>();
     }

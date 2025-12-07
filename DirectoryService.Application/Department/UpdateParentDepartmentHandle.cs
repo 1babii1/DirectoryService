@@ -57,89 +57,74 @@ namespace DirectoryService.Application.Department
 
             using var transactionScope = transactionScopeResult.Value;
 
-            try
-            {
-                // Валидация входных данных
-                ValidationResult validateResult = await _validator.ValidateAsync(requestCommand);
-                if (!validateResult.IsValid)
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("Failed to validate department");
-                    return validateResult.ToError();
-                }
-
-                var newParentDepId = DepartmentId.FromValue(requestCommand.Request.parentDepartmentId);
-                var currentDepId = DepartmentId.FromValue(requestCommand.DepartmentId);
-
-                // Блокировка того с чем будем работать
-                var newParentDep = await _departmentRepository.GetByIdWithLock(newParentDepId, cancellationToken);
-                if (newParentDep.IsFailure)
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("could not be found");
-                    return newParentDep.Error;
-                }
-
-                var currentDep = await _departmentRepository.GetByIdWithLock(currentDepId, cancellationToken);
-                if (currentDep.IsFailure)
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("could not be found");
-                    return currentDep.Error;
-                }
-
-                var lockChildren =
-                    await _departmentRepository.LockChildrenByPath(newParentDep.Value.Path, cancellationToken);
-                if (lockChildren.IsFailure)
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("could not be found");
-                    return currentDep.Error;
-                }
-
-                _logger.LogInformation(
-                    "newParentDepList department: {newParentDep}",
-                    JsonSerializer.Serialize(newParentDep.Value, new JsonSerializerOptions { WriteIndented = true }));
-
-                _logger.LogInformation(
-                    "currentDep department: {currentDep}",
-                    JsonSerializer.Serialize(currentDep.Value, new JsonSerializerOptions { WriteIndented = true }));
-
-                // Проверка id
-                var idChild = await _departmentRepository.GetChildrenIdsAsync(currentDep.Value.Path, cancellationToken);
-
-                if (idChild.Contains(currentDepId.Value))
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("You cannot select yourself or your child department");
-                    return Error.Conflict("department.id", "cannot select yourself or your child department");
-                }
-
-                var newDepth = (short)(currentDep.Value.Depth - newParentDep.Value.Depth - 1);
-
-                _logger.LogInformation(
-                    $"{newParentDepId}, {newParentDep.Value.Path}, {currentDep.Value.Path}, {newDepth}");
-
-                var updateParent = await _departmentRepository.UpdateHierarchy(newParentDepId, newParentDep.Value.Path,
-                    currentDep.Value.Path, newDepth, cancellationToken);
-
-                var save = await _transactionManager.SaveChangesAsync(cancellationToken);
-                if (save.IsFailure)
-                {
-                    transactionScope.Rollback();
-                    _logger.LogError("failed");
-                    return save.Error;
-                }
-
-                transactionScope.Commit();
-
-                return newParentDepId;
-            }
-            catch (Exception)
+            // Валидация входных данных
+            ValidationResult validateResult = await _validator.ValidateAsync(requestCommand);
+            if (!validateResult.IsValid)
             {
                 transactionScope.Rollback();
-                throw;
+                _logger.LogError("Failed to validate department");
+                return validateResult.ToError();
             }
+
+            // Проверка id
+            var newParentDepId = DepartmentId.FromValue(requestCommand.Request.parentDepartmentId);
+            var currentDepId = DepartmentId.FromValue(requestCommand.DepartmentId);
+            if (newParentDepId == currentDepId)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("department id is match");
+                return Error.Validation("department.id.is.match", "You cannot designate yourself as a parent");
+            }
+
+            // Блокировка того с чем будем работать
+            var newParentDep = await _departmentRepository.GetByIdWithLock(newParentDepId, cancellationToken);
+            if (newParentDep.IsFailure)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("could not be found");
+                return newParentDep.Error;
+            }
+
+            var currentDep = await _departmentRepository.GetByIdWithLock(currentDepId, cancellationToken);
+            if (currentDep.IsFailure)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("could not be found");
+                return currentDep.Error;
+            }
+
+            var lockChildren =
+                await _departmentRepository.LockChildrenByPath(newParentDep.Value.Path, cancellationToken);
+            if (lockChildren.IsFailure)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("could not be found");
+                return currentDep.Error;
+            }
+
+            var newDepth = (short)(currentDep.Value.Depth - newParentDep.Value.Depth - 1);
+
+            var updateParent = await _departmentRepository.UpdateHierarchy(newParentDepId, newParentDep.Value.Path,
+                currentDepId,
+                currentDep.Value.Path, newDepth, cancellationToken);
+            if (updateParent.IsFailure)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("failed");
+                return updateParent.Error;
+            }
+
+            var save = await _transactionManager.SaveChangesAsync(cancellationToken);
+            if (save.IsFailure)
+            {
+                transactionScope.Rollback();
+                _logger.LogError("failed");
+                return save.Error;
+            }
+
+            transactionScope.Commit();
+
+            return newParentDepId;
         }
     }
 }

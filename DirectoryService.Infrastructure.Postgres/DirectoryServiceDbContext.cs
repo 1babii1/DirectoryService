@@ -10,11 +10,16 @@ namespace DirectoryService.Infrastructure.Postgres;
 
 public class DirectoryServiceDbContext : DbContext
 {
-    private readonly string _connectionString;
+    private readonly string _connectionString = null!;
 
     public DirectoryServiceDbContext(string connectionString)
     {
         _connectionString = connectionString;
+    }
+
+    public DirectoryServiceDbContext(DbContextOptions<DirectoryServiceDbContext> options)
+        : base(options)
+    {
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,10 +38,6 @@ public class DirectoryServiceDbContext : DbContext
     public DbSet<Position> Position => Set<Position>();
 
     public DbSet<Departments> Department => Set<Departments>();
-
-    public DbSet<DepartmentLocation> DepartmentLocation => Set<DepartmentLocation>();
-
-    public DbSet<DepartmentPosition> DepartmentPosition => Set<DepartmentPosition>();
 
     private ILoggerFactory LoggerFactory =>
         Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());

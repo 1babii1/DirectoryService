@@ -40,6 +40,8 @@ builder.Services.AddScoped<DirectoryServiceDbContext>(_ =>
 
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 
+builder.Services.AddScoped<ITransactionManager, TransactionManager>();
+
 builder.Services.AddScoped<ILocationsRepository, EfCoreLocationsRepository>();
 
 // builder.Services.AddScoped<ILocationsRepository, NpgsqlLocationsRepository>();
@@ -54,6 +56,8 @@ builder.Services.AddScoped<CreatePositionHandle>();
 builder.Services.AddScoped<CreateDepartmentHandle>();
 
 builder.Services.AddScoped<UpdateDepartmentLocationsHadler>();
+
+builder.Services.AddScoped<UpdateParentDepartmentHandle>();
 
 var app = builder.Build();
 

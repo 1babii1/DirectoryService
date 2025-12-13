@@ -9,7 +9,7 @@ namespace DirectoryService.Contracts.Department;
 public record CreateDepartmentRequest(
     DepartmentName Name,
     DepartmentIdentifier Identifier,
-    Departments? department,
+    DepartmentId? ParentDepartmentId,
     short? Depth,
     IEnumerable<LocationId> LocationsIds,
     DepartmentId? DepartmentId);

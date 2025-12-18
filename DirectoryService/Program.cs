@@ -77,3 +77,8 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
+
+namespace DirectoryService
+{
+    public partial class Program;
+}

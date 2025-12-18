@@ -34,6 +34,6 @@ public partial record DepartmentIdentifier
         return Result.Success<DepartmentIdentifier, Error>(identifier);
     }
 
-    [GeneratedRegex(@"^[a-zA-Z]+$")]
+    [GeneratedRegex(@"^[a-zA-Z0-9]+$")]
     private static partial Regex LatinRegex();
 }

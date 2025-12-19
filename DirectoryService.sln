@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Applicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Contracts", "DirectoryService.Contracts\DirectoryService.Contracts.csproj", "{3F209ED6-0C9D-4956-98C4-595473000BA8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{00D55BC5-4526-48F7-A2B7-AE45FC4282A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.IntegrationTests", "DirectoryService.IntegrationTests\DirectoryService.IntegrationTests.csproj", "{536D8D5A-E8AB-4C1D-9955-370350BEF796}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,7 +54,12 @@ Global
 		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F209ED6-0C9D-4956-98C4-595473000BA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{536D8D5A-E8AB-4C1D-9955-370350BEF796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{536D8D5A-E8AB-4C1D-9955-370350BEF796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{536D8D5A-E8AB-4C1D-9955-370350BEF796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{536D8D5A-E8AB-4C1D-9955-370350BEF796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{536D8D5A-E8AB-4C1D-9955-370350BEF796} = {00D55BC5-4526-48F7-A2B7-AE45FC4282A0}
 	EndGlobalSection
 EndGlobal

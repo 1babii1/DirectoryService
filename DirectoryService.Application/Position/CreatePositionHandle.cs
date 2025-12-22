@@ -3,7 +3,7 @@ using DirectoryService.Application.Database;
 using DirectoryService.Application.Department;
 using DirectoryService.Application.Position.Errors;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Position;
+using DirectoryService.Contracts.Request.Position;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using FluentValidation.Results;

@@ -1,14 +1,14 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Department;
+using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace DirectoryService.Application.Department;
+namespace DirectoryService.Application.Department.Commands;
 
 public class UpdateDepartmentLocationsValidation : AbstractValidator<UpdateDepartmentLocationsCommand>
 {

@@ -1,6 +1,6 @@
 ﻿namespace DirectoryService.Contracts.Response.Department;
 
-public class DepartmentDto
+public record DepartmentDto
 {
     public Guid Id { get; set; }
 

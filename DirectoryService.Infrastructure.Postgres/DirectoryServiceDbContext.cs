@@ -1,4 +1,5 @@
-﻿using DirectoryService.Domain.DepartmentLocations;
+﻿using DirectoryService.Application.Database;
+using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres;
 
-public class DirectoryServiceDbContext : DbContext
+public class DirectoryServiceDbContext : DbContext, IReadDbContext
 {
     private readonly string _connectionString = null!;
 
@@ -38,6 +39,16 @@ public class DirectoryServiceDbContext : DbContext
     public DbSet<Position> Position => Set<Position>();
 
     public DbSet<Departments> Department => Set<Departments>();
+
+    public IQueryable<Departments> DepartmentsRead => Set<Departments>().AsNoTracking();
+
+    public IQueryable<Locations> LocationsRead => Set<Locations>().AsNoTracking();
+
+    public IQueryable<Position> PositionsRead => Set<Position>().AsNoTracking();
+
+    public IQueryable<DepartmentLocation> DepartmentsLocationsRead => Set<DepartmentLocation>().AsNoTracking();
+
+    public IQueryable<DepartmentPosition> DepartmentsPositionsRead => Set<DepartmentPosition>().AsNoTracking();
 
     private ILoggerFactory LoggerFactory =>
         Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());

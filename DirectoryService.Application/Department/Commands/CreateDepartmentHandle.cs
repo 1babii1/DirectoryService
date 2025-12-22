@@ -2,7 +2,8 @@
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Department.Errors;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Department;
+using DirectoryService.Contracts.Request.Department;
+using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
@@ -11,7 +12,7 @@ using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace DirectoryService.Application.Department;
+namespace DirectoryService.Application.Department.Commands;
 
 public record CreateDepartmentCommand(CreateDepartmentRequest request);
 
@@ -127,6 +128,15 @@ public class CreateDepartmentHandle
             _logger.LogError("Failed to create department");
             return department.Error;
         }
+
+        List<DepartmentLocation> departmentLocationsList = new List<DepartmentLocation>();
+        foreach (var locationIdValue in request.LocationsIds)
+        {
+            var departmentLocation = DepartmentLocation.Create(null, department.Value.Id, locationIdValue);
+            departmentLocationsList.Add(departmentLocation.Value);
+        }
+
+        department.Value.SetDepartmentsLocationsList(departmentLocationsList);
 
         var result = await _departmentRepository.Add(department.Value, cancellationToken);
         _logger.LogInformation("Department created successfully");

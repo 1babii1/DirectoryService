@@ -1,17 +1,14 @@
-﻿using System.Text.Json;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Department;
-using DirectoryService.Contracts.Response.Department;
-using DirectoryService.Domain.Departments;
+using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace DirectoryService.Application.Department
+namespace DirectoryService.Application.Department.Commands
 {
     public record UpdateParentDepartmentCommand(Guid DepartmentId, UpdateParentDepartmentRequest Request);
 

@@ -1,7 +1,7 @@
-﻿using DirectoryService.Contracts.Location;
+﻿using DirectoryService.Contracts.Request.Location;
 using FluentValidation;
 
-namespace DirectoryService.Application.Location;
+namespace DirectoryService.Application.Location.Commands;
 
 public class AdressValidation : AbstractValidator<Address>
 {

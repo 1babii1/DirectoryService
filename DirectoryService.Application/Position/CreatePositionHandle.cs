@@ -83,7 +83,14 @@ public class CreatePositionHandle
 
         PositionDescription? positionDescription = positionDescriptionResult.Value;
 
-        Domain.Positions.Position position = new(positionId, positionName, new List<DepartmentPosition>(),
+        List<DepartmentPosition> departmentPositions = new List<DepartmentPosition>();
+        foreach (var departmentId in request.DepartmentIds)
+        {
+            var departments = DepartmentPosition.Create(null, departmentId, positionId);
+            departmentPositions.Add(departments.Value);
+        }
+
+        Domain.Positions.Position position = new(positionId, positionName, departmentPositions,
             positionDescription);
 
         var result = await _positionRepository.Add(position, cancellationToken);

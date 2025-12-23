@@ -76,6 +76,8 @@ builder.Services.AddScoped<GetDepartmentByIdHandle>();
 
 builder.Services.AddScoped<GetDepartmentByLocationHandle>();
 
+builder.Services.AddScoped<GetDepartmentsTopByPositionsHandle>();
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

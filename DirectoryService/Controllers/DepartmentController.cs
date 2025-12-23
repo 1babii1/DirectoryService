@@ -50,4 +50,10 @@ public class DepartmentController : ControllerBase
         [FromServices] GetDepartmentByLocationHandle handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(request, cancellationToken);
+
+    [HttpGet("/top-positions")]
+    public async Task<ActionResult<List<ReadDepartmentsTopDto>?>> GetDepartmentsTopForPositions(
+        [FromServices] GetDepartmentsTopByPositionsHandle handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(cancellationToken);
 }

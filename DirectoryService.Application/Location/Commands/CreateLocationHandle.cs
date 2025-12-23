@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Location;
+using DirectoryService.Contracts.Request.Location;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
@@ -10,7 +10,7 @@ using Shared;
 using Address = DirectoryService.Domain.Locations.ValueObjects.Address;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
-namespace DirectoryService.Application.Location;
+namespace DirectoryService.Application.Location.Commands;
 
 public class CreateLocationHandle
 {

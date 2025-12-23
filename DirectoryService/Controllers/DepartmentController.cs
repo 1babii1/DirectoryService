@@ -1,6 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Department;
-using DirectoryService.Contracts.Department;
+using DirectoryService.Application.Department.Commands;
+using DirectoryService.Application.Department.Queries;
+using DirectoryService.Contracts.Request.Department;
+using DirectoryService.Contracts.Response.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -24,7 +27,7 @@ public class DepartmentController : ControllerBase
         UpdateDepartmentLocationsCommand request, CancellationToken cancellationToken) =>
         await handler.Handle(request, cancellationToken);
 
-    [HttpPut("{departmentId}/parent")]
+    [HttpPut("{departmentId:guid}/parent")]
     public async Task<EndpointResult<DepartmentId>> UpdateParent(
         [FromRoute] Guid departmentId,
         [FromServices] UpdateParentDepartmentHandle handler,
@@ -33,4 +36,24 @@ public class DepartmentController : ControllerBase
         var command = new UpdateParentDepartmentCommand(departmentId, request);
         return await handler.Handle(command, cancellationToken);
     }
+
+    [HttpGet("/department/{departmentId:guid}")]
+    public async Task<ActionResult<ReadDepartmentWithChildrenDto?>> GetDepartmentById(
+        [FromRoute] Guid departmentId,
+        [FromServices] GetDepartmentByIdHandle handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetDepartmentByIdRequest(departmentId), cancellationToken);
+
+    [HttpGet("/department/location")]
+    public async Task<ActionResult<List<ReadDepartmentDto>?>> GetDepartmentByLocation(
+        [FromQuery] GetDepartmentByLocationRequest request,
+        [FromServices] GetDepartmentByLocationHandle handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(request, cancellationToken);
+
+    [HttpGet("/top-positions")]
+    public async Task<ActionResult<List<ReadDepartmentsTopDto>?>> GetDepartmentsTopForPositions(
+        [FromServices] GetDepartmentsTopByPositionsHandle handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(cancellationToken);
 }

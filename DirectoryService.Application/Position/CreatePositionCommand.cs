@@ -1,4 +1,4 @@
-﻿using DirectoryService.Contracts.Position;
+﻿using DirectoryService.Contracts.Request.Position;
 
 namespace DirectoryService.Application.Position;
 

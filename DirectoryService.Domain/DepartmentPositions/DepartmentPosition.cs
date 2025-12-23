@@ -20,10 +20,10 @@ public class DepartmentPosition
         PositionId = positionId;
     }
 
-    public static Result<DepartmentPosition> Create(DepartmentPositionsId id, DepartmentId departmentId,
+    public static Result<DepartmentPosition> Create(DepartmentPositionsId? id, DepartmentId departmentId,
         PositionId positionId)
     {
-        DepartmentPosition departmentPosition = new(id, departmentId, positionId);
+        DepartmentPosition departmentPosition = new(id ?? DepartmentPositionsId.NewDepartmentPositionsId(), departmentId, positionId);
 
         return Result.Success(departmentPosition);
     }

@@ -1,5 +1,4 @@
 ﻿using DirectoryService.Application.Position;
-using DirectoryService.Contracts.Position;
 using Microsoft.AspNetCore.Mvc;
 using Shared.EndpointResults;
 

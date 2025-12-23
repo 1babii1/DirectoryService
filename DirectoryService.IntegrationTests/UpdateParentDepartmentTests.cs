@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Department;
-using DirectoryService.Contracts.Department;
+using DirectoryService.Application.Department.Commands;
+using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;

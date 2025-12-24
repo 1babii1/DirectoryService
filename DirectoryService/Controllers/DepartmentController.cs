@@ -56,4 +56,22 @@ public class DepartmentController : ControllerBase
         [FromServices] GetDepartmentsTopByPositionsHandle handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(cancellationToken);
+
+    [HttpGet("/roots")]
+    public async Task<ActionResult<List<ReadDepartmentHierarchyDto>?>> GetRootDepartments(
+        [FromQuery] GetParentDepartmentsRequest request,
+        [FromServices] GetParentDepartmentsHandle handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(request, cancellationToken);
+
+    [HttpGet("/{parentId:guid}/children")]
+    public async Task<ActionResult<List<ReadDepartmentHierarchyDto>?>> GetChildrenLazy(
+        [FromRoute] Guid parentId,
+        [FromQuery] GetChildrenLazyRequest request,
+        [FromServices] GetChildrenLazyHandle handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new GetChildrenLazyCommand(parentId, request);
+        return await handler.Handle(command, cancellationToken);
+    }
 }

@@ -78,6 +78,10 @@ builder.Services.AddScoped<GetDepartmentByLocationHandle>();
 
 builder.Services.AddScoped<GetDepartmentsTopByPositionsHandle>();
 
+builder.Services.AddScoped<GetParentDepartmentsHandle>();
+
+builder.Services.AddScoped<GetChildrenLazyHandle>();
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

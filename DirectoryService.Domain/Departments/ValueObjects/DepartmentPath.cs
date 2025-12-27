@@ -6,8 +6,9 @@ namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public partial record DepartmentPath
 {
+    private const string _deleted = "deleted-";
     private const char _separator = '.';
-    public string Value { get; }
+    public string Value { get; private set; }
 
     private DepartmentPath(string value)
     {
@@ -67,6 +68,21 @@ public partial record DepartmentPath
         DepartmentPath result = new(trimmed);
 
         return Result.Success<DepartmentPath, Error>(result);
+    }
+
+    public DepartmentPath ChangePath()
+    {
+        var segments = Value.Split(_separator);
+        var lastSegment = segments[^1];
+        if (lastSegment.StartsWith(_deleted, StringComparison.OrdinalIgnoreCase))
+        {
+            return new DepartmentPath(Value);
+        }
+
+        segments[^1] = _deleted + lastSegment;
+        var newPathValue = string.Join(_separator, segments);
+
+        return new DepartmentPath(newPathValue);
     }
 
     [GeneratedRegex(@"^[a-zA-Z.-]+$")]

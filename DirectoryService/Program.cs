@@ -82,6 +82,8 @@ builder.Services.AddScoped<GetParentDepartmentsHandle>();
 
 builder.Services.AddScoped<GetChildrenLazyHandle>();
 
+builder.Services.AddScoped<SoftDeleteDepartmentHandle>();
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

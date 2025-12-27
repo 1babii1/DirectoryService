@@ -74,4 +74,10 @@ public class DepartmentController : ControllerBase
         var command = new GetChildrenLazyCommand(parentId, request);
         return await handler.Handle(command, cancellationToken);
     }
+
+    [HttpDelete("{departmentId:guid}")]
+    public async Task<EndpointResult<DepartmentId>> SoftDeleteDepartments(
+        [FromRoute] SoftDeleteDepartmentRequest request,
+        [FromServices] SoftDeleteDepartmentHandle handler,
+        CancellationToken cancellationToken) => await handler.Handle(request, cancellationToken);
 }

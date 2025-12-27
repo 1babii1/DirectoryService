@@ -4,6 +4,7 @@ using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Positions;
+using DirectoryService.Infrastructure.Postgres.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +28,7 @@ public class DirectoryServiceDbContext : DbContext, IReadDbContext
     {
         optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseLoggerFactory(LoggerFactory);
+        optionsBuilder.AddInterceptors(new SoftDeleteInterceptors());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,6 +41,10 @@ public class DirectoryServiceDbContext : DbContext, IReadDbContext
     public DbSet<Position> Position => Set<Position>();
 
     public DbSet<Departments> Department => Set<Departments>();
+
+    public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
+
+    public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
     public IQueryable<Departments> DepartmentsRead => Set<Departments>().AsNoTracking();
 

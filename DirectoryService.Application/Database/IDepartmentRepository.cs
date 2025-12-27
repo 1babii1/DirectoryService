@@ -42,11 +42,13 @@ public interface IDepartmentRepository
         DepartmentId currentId,
         DepartmentPath oldPath,
         short depth,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task<Result<Guid, Error>> Add(Departments department, CancellationToken cancellationToken = default);
 
     Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(
         IEnumerable<DepartmentId> departmentIds,
         CancellationToken cancellationToken);
+
+    Task<Result<DepartmentId, Error>> Delete(Departments departments, CancellationToken cancellationToken = default);
 }

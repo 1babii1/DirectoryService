@@ -25,4 +25,4 @@ public record ReadDepartmentHierarchyDto
     public List<ReadDepartmentHierarchyDto>? Children { get; set; }
 
     public bool HasMoreChildren { get; init; }
-};
+}

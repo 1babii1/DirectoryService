@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Domain.Positions;
 
-public class Position
+public class Position : ISoftDeletable
 {
     public PositionId Id { get; private set; } = null!;
 
@@ -56,4 +57,8 @@ public class Position
 
     public void SetDepartmentPositionsList(IReadOnlyList<DepartmentPosition> departmentPositionsList) =>
         DepartmentPositionsList = departmentPositionsList;
+
+    public void Delete() => IsActive = false;
+
+    public void Activate() => IsActive = true;
 }

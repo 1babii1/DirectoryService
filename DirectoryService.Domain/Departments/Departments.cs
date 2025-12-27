@@ -7,7 +7,7 @@ using Shared;
 
 namespace DirectoryService.Domain.Departments;
 
-public sealed class Departments
+public sealed class Departments : ISoftDeletable
 {
     public DepartmentId Id { get; private set; } = null!;
 
@@ -114,8 +114,6 @@ public sealed class Departments
 
     public void SetDepth(short depth) => Depth = depth;
 
-    public void SetIsActive(bool isActive) => IsActive = isActive;
-
     public void SetCreatedAt(DateTime createdAt) => CreatedAt = createdAt;
 
     public void SetUpdatedAt(DateTime updatedAt) => UpdatedAt = updatedAt;
@@ -125,4 +123,12 @@ public sealed class Departments
 
     public void SetDepartmentsLocationsList(IEnumerable<DepartmentLocation> departmentsLocationsList) =>
         DepartmentsLocationsList = departmentsLocationsList.ToList();
+
+    public void Delete()
+    {
+        IsActive = false;
+        Path = Path.ChangePath();
+    }
+
+    public void Activate() => IsActive = true;
 }

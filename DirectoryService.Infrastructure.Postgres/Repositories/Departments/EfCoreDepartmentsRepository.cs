@@ -265,4 +265,65 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
             return Error.Failure("department.get", "Fail to get departments ids");
         }
     }
+
+    public async Task<Result<DepartmentId, Error>> Delete(
+        Domain.Departments.Departments departments,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Мягкое удаление Департамента c interceptor
+            _dbContext.Department.Remove(departments);
+
+            // Мягкое удаление Локации если у них нет других связей
+            var locationsDepartment = await _dbContext.DepartmentLocations
+                .Where(dl => dl.DepartmentId == departments.Id)
+                .GroupBy(dl => dl.LocationId)
+                .Where(g => g.Count() == 1)
+                .Select(g => g.Key)
+                .ToListAsync(cancellationToken);
+
+            if (locationsDepartment.Any())
+            {
+                var locations = await _dbContext.Location
+                    .Where(l => locationsDepartment.Contains(l.Id) && l.IsActive == true)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var location in locations)
+                {
+                    location.Delete();
+                    _dbContext.Entry(location).State = EntityState.Modified;
+                }
+            }
+
+            // Мягкое удаление позиции если у них нет других связей
+            var positionsDepartment = await _dbContext.DepartmentPositions
+                .Where(dl => dl.DepartmentId == departments.Id)
+                .GroupBy(dl => dl.PositionId)
+                .Where(g => g.Count() == 1)
+                .Select(g => g.Key)
+                .ToListAsync(cancellationToken);
+
+            if (positionsDepartment.Any())
+            {
+                var positions = await _dbContext.Position
+                    .Where(p => positionsDepartment.Contains(p.Id) && p.IsActive == true)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var position in positions)
+                {
+                    position.Delete();
+                    _dbContext.Entry(position).State = EntityState.Modified;
+                }
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return Result.Success<DepartmentId, Error>(departments.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error deleting department {DepartmentId}", departments.Id.Value);
+            return Error.Failure("department.delete", "Failed to delete department");
+        }
+    }
 }

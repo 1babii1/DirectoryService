@@ -75,7 +75,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryTestWEbFactory>, IAs
     private async Task<Guid> CreateDepartmentWithLocation()
     {
         var locationId = await CreateLocation("dept");
-        var result = await ExecuteHadler((CreateDepartmentHandle sut) =>
+        var result = await ExecuteHadler((CreateDepartmentHandler sut) =>
         {
             return sut.Handle(
                 new CreateDepartmentCommand(new CreateDepartmentRequest(
@@ -111,11 +111,11 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryTestWEbFactory>, IAs
         });
     }
 
-    private async Task<T> ExecuteHadler<T>(Func<CreateDepartmentHandle, Task<T>> action)
+    private async Task<T> ExecuteHadler<T>(Func<CreateDepartmentHandler, Task<T>> action)
     {
         await using var scope = Services.CreateAsyncScope();
 
-        var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandle>();
+        var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandler>();
 
         return await action(sut);
     }

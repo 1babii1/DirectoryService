@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ public class NpgsqlPositionRepository : IPositionRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILogger<NpgsqlPositionRepository> _logger;
+    private IPositionRepository _positionRepositoryImplementation;
 
     public NpgsqlPositionRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlPositionRepository> logger)
     {
@@ -57,4 +59,9 @@ public class NpgsqlPositionRepository : IPositionRepository
             return Error.Failure("position.insert", "Fail to insert position");
         }
     }
+
+    public async Task<Result<IEnumerable<Position>, Error>> GetOrphanPositionByDepartment(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken) =>
+        Result.Success<IEnumerable<Position>, Error>(new List<Position>());
 }

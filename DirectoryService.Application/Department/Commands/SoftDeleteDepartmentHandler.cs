@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using Dapper;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
@@ -18,32 +17,33 @@ public class SoftDeleteDepartmentValidation : AbstractValidator<SoftDeleteDepart
     }
 }
 
-public class SoftDeleteDepartmentHandle
+public class SoftDeleteDepartmentHandler
 {
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly ILocationsRepository _locationsRepository;
+    private readonly IPositionRepository _positionRepository;
     private readonly ITransactionManager _transactionManager;
-    private readonly ILogger<SoftDeleteDepartmentHandle> _logger;
+    private readonly ILogger<SoftDeleteDepartmentHandler> _logger;
     private readonly SoftDeleteDepartmentValidation _validation;
-    private readonly IDbConnectionFactory _dbConnectionFactory;
 
-    public SoftDeleteDepartmentHandle(
-        IDepartmentRepository departmentRepository,
-        ITransactionManager transactionManager, ILogger<SoftDeleteDepartmentHandle> logger,
-        SoftDeleteDepartmentValidation validation, IDbConnectionFactory dbConnectionFactory)
+    public SoftDeleteDepartmentHandler(
+        IDepartmentRepository departmentRepository, ILocationsRepository locationsRepository,
+        IPositionRepository positionRepository,
+        ITransactionManager transactionManager, ILogger<SoftDeleteDepartmentHandler> logger,
+        SoftDeleteDepartmentValidation validation)
     {
         _departmentRepository = departmentRepository;
+        _locationsRepository = locationsRepository;
+        _positionRepository = positionRepository;
         _transactionManager = transactionManager;
         _logger = logger;
         _validation = validation;
-        _dbConnectionFactory = dbConnectionFactory;
     }
 
     public async Task<Result<DepartmentId, Error>> Handle(
         SoftDeleteDepartmentRequest request,
         CancellationToken cancellationToken)
     {
-        var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
-
         var transaction = await _transactionManager.BeginTransactionAsync(cancellationToken);
         if (transaction.IsFailure)
         {
@@ -78,17 +78,53 @@ public class SoftDeleteDepartmentHandle
             return department.Error;
         }
 
-        var deletedDepartment = await _departmentRepository.Delete(department.Value, cancellationToken);
-        if (deletedDepartment.IsFailure)
+        // Мягкое удаление департамента
+        department.Value.Delete();
+
+        // Получение осиротевших Локации
+        var locationOrphan =
+            await _locationsRepository.GetOrphanLocationByDepartment(department.Value.Id, cancellationToken);
+        if (locationOrphan.IsFailure)
         {
             transactionScope.Rollback();
-            _logger.LogError("department not deleted");
-            return department.Error;
+            _logger.LogError("fail to get orphan locations");
+            return locationOrphan.Error;
+        }
+
+        if (locationOrphan.Value.Any())
+        {
+            foreach (var location in locationOrphan.Value)
+            {
+                location.Delete();
+            }
+        }
+
+        // Получение осиротевших Локации
+        var positionOrphan =
+            await _positionRepository.GetOrphanPositionByDepartment(department.Value.Id, cancellationToken);
+        if (positionOrphan.IsFailure)
+        {
+            transactionScope.Rollback();
+            _logger.LogError("fail to get orphan locations");
+            return positionOrphan.Error;
+        }
+
+        if (positionOrphan.Value.Any())
+        {
+            foreach (var position in positionOrphan.Value)
+            {
+                position.Delete();
+            }
         }
 
         await _transactionManager.SaveChangesAsync(cancellationToken);
         transactionScope.Commit();
 
-        return deletedDepartment;
+        _logger.LogInformation(
+            "Департамент удален{0}{1}",
+            locationOrphan.Value?.Any() == true ? ", удалены связанные локации" : " ",
+            positionOrphan.Value?.Any() == true ? ", удалены связанные позиции" : " ");
+
+        return department.Value.Id;
     }
 }

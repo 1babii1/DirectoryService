@@ -38,13 +38,6 @@ public class Position : ISoftDeletable
         DepartmentPositionsList = departmentPositionsList.ToList();
     }
 
-    // public static Result<Position> Create(PositionId id, PositionName name, PositionDescription description, bool isActive,
-    //     DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentPosition> departmentPositionsList)
-    // {
-    //     Position position = new(id, name, description, isActive, createdAt, updatedAt, departmentPositionsList);
-    //
-    //     return Result.Success(position);
-    // }
     public void SetId(PositionId id) => Id = id;
 
     public void SetName(PositionName name) => Name = name;

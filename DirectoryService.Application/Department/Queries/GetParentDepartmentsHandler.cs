@@ -5,11 +5,11 @@ using DirectoryService.Contracts.Response.Department;
 
 namespace DirectoryService.Application.Department.Queries;
 
-public class GetParentDepartmentsHandle
+public class GetParentDepartmentsHandler
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public GetParentDepartmentsHandle(IDbConnectionFactory connectionFactory)
+    public GetParentDepartmentsHandler(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

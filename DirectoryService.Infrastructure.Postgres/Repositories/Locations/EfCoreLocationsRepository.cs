@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,38 @@ public class EfCoreLocationsRepository : ILocationsRepository
         }
     }
 
+    public async Task<Result<IEnumerable<Domain.Locations.Locations>, Error>> GetOrphanLocationByDepartment(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var locationsDepartment = await _dbContext.DepartmentLocations
+                .Where(dl => dl.DepartmentId == departmentId)
+                .GroupBy(dl => dl.LocationId)
+                .Where(g => g.Count() == 1)
+                .Select(g => g.Key)
+                .ToListAsync(cancellationToken);
+
+            if (locationsDepartment.Any())
+            {
+                var locations = await _dbContext.Location
+                    .Where(l => locationsDepartment.Contains(l.Id) && l.IsActive == true)
+                    .ToListAsync(cancellationToken);
+                return Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(locations);
+            }
+
+            return Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(
+                new List<Domain.Locations.Locations>());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting locations");
+
+            return Error.Failure("location.get", "Fail to get locations");
+        }
+    }
+
     public async Task<Result<IEnumerable<LocationId>, Error>> GetLocationsIds(
         IEnumerable<LocationId> locationIds,
         CancellationToken cancellationToken)
@@ -63,7 +96,6 @@ public class EfCoreLocationsRepository : ILocationsRepository
         try
         {
             IEnumerable<LocationId> enumerable = locationIds.ToList();
-            Console.WriteLine("locationIds: " + string.Join(", ", enumerable.Select(li => li.Value.ToString())));
             var allLocationIds = await _dbContext.Location
                 .Where(l => enumerable.Contains(l.Id))
                 .Where(l => l.IsActive == true)

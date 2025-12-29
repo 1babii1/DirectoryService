@@ -21,18 +21,18 @@ namespace DirectoryService.Application.Department.Commands
         }
     }
 
-    public class UpdateParentDepartmentHandle
+    public class UpdateParentDepartmentHandler
     {
         private readonly IDepartmentRepository _departmentRepository;
         private readonly UpdateParentDepartmentValidation _validator;
         private readonly ITransactionManager _transactionManager;
-        private readonly ILogger<UpdateParentDepartmentHandle> _logger;
+        private readonly ILogger<UpdateParentDepartmentHandler> _logger;
 
-        public UpdateParentDepartmentHandle(
+        public UpdateParentDepartmentHandler(
             IDepartmentRepository departmentRepository,
             UpdateParentDepartmentValidation validator,
             ITransactionManager transaction,
-            ILogger<UpdateParentDepartmentHandle> logger)
+            ILogger<UpdateParentDepartmentHandler> logger)
         {
             _departmentRepository = departmentRepository;
             _validator = validator;

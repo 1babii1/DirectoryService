@@ -49,6 +49,4 @@ public interface IDepartmentRepository
     Task<Result<IEnumerable<DepartmentId>, Error>> GetDepartmentsIds(
         IEnumerable<DepartmentId> departmentIds,
         CancellationToken cancellationToken);
-
-    Task<Result<DepartmentId, Error>> Delete(Departments departments, CancellationToken cancellationToken = default);
 }

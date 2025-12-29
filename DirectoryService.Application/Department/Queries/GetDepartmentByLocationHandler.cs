@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Application.Department.Queries;
 
-public class GetDepartmentByLocationHandle
+public class GetDepartmentByLocationHandler
 {
     private readonly IReadDbContext _readDbContext;
 
-    public GetDepartmentByLocationHandle(IReadDbContext readDbContext)
+    public GetDepartmentByLocationHandler(IReadDbContext readDbContext)
     {
         _readDbContext = readDbContext;
     }

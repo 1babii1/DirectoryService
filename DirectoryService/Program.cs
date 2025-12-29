@@ -62,27 +62,27 @@ builder.Services.AddScoped<CreateLocationHandle>();
 
 builder.Services.AddScoped<CreatePositionHandle>();
 
-builder.Services.AddScoped<CreateDepartmentHandle>();
+builder.Services.AddScoped<CreateDepartmentHandler>();
 
 builder.Services.AddScoped<UpdateDepartmentLocationsHadler>();
 
-builder.Services.AddScoped<UpdateParentDepartmentHandle>();
+builder.Services.AddScoped<UpdateParentDepartmentHandler>();
 
 builder.Services.AddScoped<GetLocationByIdHandle>();
 
 builder.Services.AddScoped<GetLocationByDepartmentHandle>();
 
-builder.Services.AddScoped<GetDepartmentByIdHandle>();
+builder.Services.AddScoped<GetDepartmentByIdHandler>();
 
-builder.Services.AddScoped<GetDepartmentByLocationHandle>();
+builder.Services.AddScoped<GetDepartmentByLocationHandler>();
 
-builder.Services.AddScoped<GetDepartmentsTopByPositionsHandle>();
+builder.Services.AddScoped<GetDepartmentsTopByPositionsHandler>();
 
-builder.Services.AddScoped<GetParentDepartmentsHandle>();
+builder.Services.AddScoped<GetParentDepartmentsHandler>();
 
-builder.Services.AddScoped<GetChildrenLazyHandle>();
+builder.Services.AddScoped<GetChildrenLazyHandler>();
 
-builder.Services.AddScoped<SoftDeleteDepartmentHandle>();
+builder.Services.AddScoped<SoftDeleteDepartmentHandler>();
 
 var app = builder.Build();
 

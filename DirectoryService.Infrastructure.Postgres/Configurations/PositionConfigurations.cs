@@ -39,6 +39,11 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
         builder.Property(p => p.UpdatedAt)
             .HasColumnName("updated_at");
 
+        builder
+            .Property(d => d.DeletedAt)
+            .HasColumnName("deleted_at")
+            .IsRequired(false);
+
         builder.HasMany(p => p.DepartmentPositionsList)
             .WithOne()
             .HasForeignKey(p => p.PositionId)

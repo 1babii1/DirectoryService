@@ -27,6 +27,8 @@ public sealed class Departments : ISoftDeletable
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public IReadOnlyList<Departments> DepartmentsChildrenList { get; private set; } = null!;
 
     public IReadOnlyList<DepartmentPosition> DepartmentsPositionsList { get; private set; } = null!;
@@ -128,6 +130,7 @@ public sealed class Departments : ISoftDeletable
     {
         IsActive = false;
         Path = Path.ChangePath();
+        DeletedAt = DateTime.UtcNow;
     }
 
     public void Activate() => IsActive = true;

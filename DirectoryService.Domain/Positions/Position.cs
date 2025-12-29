@@ -19,6 +19,8 @@ public class Position : ISoftDeletable
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public IReadOnlyList<DepartmentPosition> DepartmentPositionsList { get; private set; } = null!;
 
     // EF Core
@@ -58,7 +60,11 @@ public class Position : ISoftDeletable
     public void SetDepartmentPositionsList(IReadOnlyList<DepartmentPosition> departmentPositionsList) =>
         DepartmentPositionsList = departmentPositionsList;
 
-    public void Delete() => IsActive = false;
+    public void Delete()
+    {
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+    }
 
     public void Activate() => IsActive = true;
 }

@@ -20,6 +20,8 @@ public class Locations : ISoftDeletable
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; } = null!;
 
     // EF Core
@@ -66,7 +68,11 @@ public class Locations : ISoftDeletable
     public void SetDepartmentLocationsList(IReadOnlyList<DepartmentLocation> departmentLocationsList) =>
         DepartmentLocationsList = departmentLocationsList;
 
-    public void Delete() => IsActive = false;
+    public void Delete()
+    {
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+    }
 
     public void Activate() => IsActive = true;
 }

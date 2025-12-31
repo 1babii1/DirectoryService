@@ -40,6 +40,10 @@ public class DirectoryServiceDbContext : DbContext, IReadDbContext
 
     public DbSet<Departments> Department => Set<Departments>();
 
+    public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
+
+    public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
+
     public IQueryable<Departments> DepartmentsRead => Set<Departments>().AsNoTracking();
 
     public IQueryable<Locations> LocationsRead => Set<Locations>().AsNoTracking();

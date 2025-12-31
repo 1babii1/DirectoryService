@@ -38,16 +38,16 @@ public class CreateDepartmentValidation : AbstractValidator<CreateDepartmentRequ
     }
 }
 
-public class CreateDepartmentHandle
+public class CreateDepartmentHandler
 {
     private readonly IDepartmentRepository _departmentRepository;
     private readonly ILocationsRepository _locationRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly CreateDepartmentValidation _validator;
-    private readonly ILogger<CreateDepartmentHandle> _logger;
+    private readonly ILogger<CreateDepartmentHandler> _logger;
 
-    public CreateDepartmentHandle(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
-        ILogger<CreateDepartmentHandle> logger, ILocationsRepository locationRepository,
+    public CreateDepartmentHandler(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
+        ILogger<CreateDepartmentHandler> logger, ILocationsRepository locationRepository,
         ITransactionManager transactionManager)
     {
         _departmentRepository = departmentRepository;

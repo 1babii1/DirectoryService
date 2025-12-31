@@ -42,7 +42,7 @@ public interface IDepartmentRepository
         DepartmentId currentId,
         DepartmentPath oldPath,
         short depth,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task<Result<Guid, Error>> Add(Departments department, CancellationToken cancellationToken = default);
 

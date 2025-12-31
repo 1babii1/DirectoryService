@@ -1,5 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Domain.Departments.ValueObjects;
+using DirectoryService.Domain.Positions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -33,6 +36,37 @@ public class EfCorePositionRepository : IPositionRepository
             _logger.LogError(e, "Error adding position");
 
             return Error.Failure("position.insert", "Fail to insert position");
+        }
+    }
+
+    public async Task<Result<IEnumerable<Position>, Error>> GetOrphanPositionByDepartment(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var locationsDepartment = await _dbContext.DepartmentPositions
+                .Where(dp => dp.DepartmentId == departmentId)
+                .GroupBy(dp => dp.PositionId)
+                .Where(g => g.Count() == 1)
+                .Select(g => g.Key)
+                .ToListAsync(cancellationToken);
+
+            if (locationsDepartment.Any())
+            {
+                var locations = await _dbContext.Position
+                    .Where(p => locationsDepartment.Contains(p.Id) && p.IsActive == true)
+                    .ToListAsync(cancellationToken);
+                return Result.Success<IEnumerable<Position>, Error>(locations);
+            }
+
+            return Result.Success<IEnumerable<Position>, Error>(new List<Position>());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error getting position");
+
+            return Error.Failure("position.get", "Fail to get position");
         }
     }
 }

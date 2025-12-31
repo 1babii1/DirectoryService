@@ -1,9 +1,10 @@
 ﻿using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Locations.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Domain.Locations;
 
-public class Locations
+public class Locations : ISoftDeletable
 {
     public LocationId Id { get; private set; } = null!;
 
@@ -18,6 +19,8 @@ public class Locations
     public DateTime CreatedAt { get; private set; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public IReadOnlyList<DepartmentLocation> DepartmentLocationsList { get; private set; } = null!;
 
@@ -64,4 +67,12 @@ public class Locations
 
     public void SetDepartmentLocationsList(IReadOnlyList<DepartmentLocation> departmentLocationsList) =>
         DepartmentLocationsList = departmentLocationsList;
+
+    public void Delete()
+    {
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+    }
+
+    public void Activate() => IsActive = true;
 }

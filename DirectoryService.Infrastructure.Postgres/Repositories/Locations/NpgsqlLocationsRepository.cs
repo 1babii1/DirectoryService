@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.Logging;
@@ -89,4 +90,8 @@ public class NpgsqlLocationsRepository : ILocationsRepository
 
         return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
     }
+
+    public async Task<Result<IEnumerable<Domain.Locations.Locations>, Error>> GetOrphanLocationByDepartment(
+        DepartmentId departmentId, CancellationToken cancellationToken) =>
+        Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(new List<Domain.Locations.Locations>());
 }

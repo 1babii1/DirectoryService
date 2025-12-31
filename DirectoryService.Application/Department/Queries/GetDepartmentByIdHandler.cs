@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Application.Department.Queries;
 
-public class GetDepartmentByIdHandle
+public class GetDepartmentByIdHandler
 {
     private readonly IReadDbContext _readDbContext;
 
-    public GetDepartmentByIdHandle(IReadDbContext readDbContext)
+    public GetDepartmentByIdHandler(IReadDbContext readDbContext)
     {
         _readDbContext = readDbContext;
     }

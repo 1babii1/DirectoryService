@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Domain.Positions;
 
-public class Position
+public class Position : ISoftDeletable
 {
     public PositionId Id { get; private set; } = null!;
 
@@ -17,6 +18,8 @@ public class Position
     public DateTime CreatedAt { get; private set; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public IReadOnlyList<DepartmentPosition> DepartmentPositionsList { get; private set; } = null!;
 
@@ -35,13 +38,6 @@ public class Position
         DepartmentPositionsList = departmentPositionsList.ToList();
     }
 
-    // public static Result<Position> Create(PositionId id, PositionName name, PositionDescription description, bool isActive,
-    //     DateTime createdAt, DateTime updatedAt, IReadOnlyList<DepartmentPosition> departmentPositionsList)
-    // {
-    //     Position position = new(id, name, description, isActive, createdAt, updatedAt, departmentPositionsList);
-    //
-    //     return Result.Success(position);
-    // }
     public void SetId(PositionId id) => Id = id;
 
     public void SetName(PositionName name) => Name = name;
@@ -56,4 +52,12 @@ public class Position
 
     public void SetDepartmentPositionsList(IReadOnlyList<DepartmentPosition> departmentPositionsList) =>
         DepartmentPositionsList = departmentPositionsList;
+
+    public void Delete()
+    {
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+    }
+
+    public void Activate() => IsActive = true;
 }

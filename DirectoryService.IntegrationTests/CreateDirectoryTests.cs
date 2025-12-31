@@ -188,11 +188,11 @@ public class CreateDirectoryTests : IClassFixture<DirectoryTestWEbFactory>, IAsy
         });
     }
 
-    private async Task<T> ExecuteHadler<T>(Func<CreateDepartmentHandle, Task<T>> action)
+    private async Task<T> ExecuteHadler<T>(Func<CreateDepartmentHandler, Task<T>> action)
     {
         await using var scope = Services.CreateAsyncScope();
 
-        var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandle>();
+        var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandler>();
 
         return await action(sut);
     }

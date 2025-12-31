@@ -4,11 +4,11 @@ using DirectoryService.Contracts.Response.Department;
 
 namespace DirectoryService.Application.Department.Queries;
 
-public class GetDepartmentsTopByPositionsHandle
+public class GetDepartmentsTopByPositionsHandler
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public GetDepartmentsTopByPositionsHandle(IDbConnectionFactory connectionFactory)
+    public GetDepartmentsTopByPositionsHandler(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

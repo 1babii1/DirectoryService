@@ -8,11 +8,11 @@ namespace DirectoryService.Application.Department.Queries;
 
 public record GetChildrenLazyCommand([FromRoute] Guid ParentId, [FromQuery] GetChildrenLazyRequest Request);
 
-public class GetChildrenLazyHandle
+public class GetChildrenLazyHandler
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public GetChildrenLazyHandle(IDbConnectionFactory connectionFactory)
+    public GetChildrenLazyHandler(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

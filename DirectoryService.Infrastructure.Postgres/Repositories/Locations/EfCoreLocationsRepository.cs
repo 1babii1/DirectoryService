@@ -27,7 +27,7 @@ public class EfCoreLocationsRepository : ILocationsRepository
     {
         try
         {
-            await _dbContext.Location.AddAsync(locations, cancellationToken);
+            await _dbContext.Locations.AddAsync(locations, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -39,12 +39,12 @@ public class EfCoreLocationsRepository : ILocationsRepository
 
             if (pgEx.ConstraintName == "ux_locations_name")
             {
-                return Error.Conflict(null!, "Location name already exists");
+                return Error.Conflict(null!, "Locations name already exists");
             }
 
             if (pgEx.ConstraintName == "ux_locations_address")
             {
-                return Error.Conflict(null!, "Location address is already occupied");
+                return Error.Conflict(null!, "Locations address is already occupied");
             }
 
             return Error.Failure("location.insert", "Fail to insert location");
@@ -72,7 +72,7 @@ public class EfCoreLocationsRepository : ILocationsRepository
 
             if (locationsDepartment.Any())
             {
-                var locations = await _dbContext.Location
+                var locations = await _dbContext.Locations
                     .Where(l => locationsDepartment.Contains(l.Id) && l.IsActive == true)
                     .ToListAsync(cancellationToken);
                 return Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(locations);
@@ -96,7 +96,7 @@ public class EfCoreLocationsRepository : ILocationsRepository
         try
         {
             IEnumerable<LocationId> enumerable = locationIds.ToList();
-            var allLocationIds = await _dbContext.Location
+            var allLocationIds = await _dbContext.Locations
                 .Where(l => enumerable.Contains(l.Id))
                 .Where(l => l.IsActive == true)
                 .Select(l => l.Id)

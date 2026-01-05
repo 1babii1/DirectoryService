@@ -35,7 +35,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            var departments = await _dbContext.Department
+            var departments = await _dbContext.Departments
                 .Where(d => departmentIds.Contains(d.Id))
                 .ToListAsync(cancellationToken: cancellationToken);
 
@@ -67,7 +67,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            var departments = await _dbContext.Department
+            var departments = await _dbContext.Departments
                 .Where(d => d.Id == departmentId)
                 .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
@@ -99,13 +99,13 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            var department = await _dbContext.Department
+            var department = await _dbContext.Departments
                 .Include(d => d.DepartmentsLocationsList)
                 .FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken: cancellationToken);
             if (department is null)
             {
-                _logger.LogError("Department not found");
-                return Error.NotFound("department.get", "Department not found");
+                _logger.LogError("Departments not found");
+                return Error.NotFound("department.get", "Departments not found");
             }
 
             return Result.Success<Domain.Departments.Departments, Error>(department);
@@ -129,13 +129,13 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            var department = await _dbContext.Department
+            var department = await _dbContext.Departments
                 .FromSql($"SELECT * FROM departments WHERE id = {departmentId.Value} FOR UPDATE")
                 .FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
             if (department is null)
             {
-                _logger.LogError("Department not found");
-                return Error.NotFound("department.get", "Department not found");
+                _logger.LogError("Departments not found");
+                return Error.NotFound("department.get", "Departments not found");
             }
 
             return Result.Success<Domain.Departments.Departments, Error>(department);
@@ -224,7 +224,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            await _dbContext.Department.AddAsync(department, cancellationToken);
+            await _dbContext.Departments.AddAsync(department, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -244,7 +244,7 @@ public class EfCoreDepartmentsRepository : IDepartmentRepository
     {
         try
         {
-            var allDepartmentIds = await _dbContext.Department
+            var allDepartmentIds = await _dbContext.Departments
                 .Select(d => d.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
 

@@ -58,7 +58,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryTestWEbFactory>, IAs
         await ExecuteInDb(async dbContext =>
         {
             var department =
-                await dbContext.Department.Include(departments => departments.DepartmentsLocationsList).FirstAsync(
+                await dbContext.Departments.Include(departments => departments.DepartmentsLocationsList).FirstAsync(
                     d => d.Id == DepartmentId.FromValue(result.Value),
                     cancellationToken);
 
@@ -103,7 +103,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryTestWEbFactory>, IAs
             var location = new Locations(LocationId.NewLocationId(), LocationName.Create($"location{suffix}").Value,
                 Timezone.Create("europe/asia").Value,
                 Address.Create($"street{suffix}", $"city{suffix}", $"country{suffix}").Value, []);
-            dbContext.Location.Add(location);
+            dbContext.Locations.Add(location);
             await dbContext.SaveChangesAsync();
 
             locationId = location.Id;

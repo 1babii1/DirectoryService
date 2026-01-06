@@ -1,8 +1,6 @@
 using DirectoryService.Application.Database;
-using DirectoryService.Application.Department;
 using DirectoryService.Application.Department.Commands;
 using DirectoryService.Application.Department.Queries;
-using DirectoryService.Application.Location;
 using DirectoryService.Application.Location.Commands;
 using DirectoryService.Application.Location.Queries;
 using DirectoryService.Application.Position;
@@ -98,11 +96,9 @@ app.UseHttpLogging();
 app.UseMiddleware<ExeptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi("/openapi/v1/swagger.json");
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1/swagger.json", "DirectoryService"));
-}
+// if (app.Environment.IsDevelopment() || app.Environment.Is)
+app.MapOpenApi("/openapi/v1/swagger.json");
+app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1/swagger.json", "DirectoryService"));
 
 app.MapControllers();
 

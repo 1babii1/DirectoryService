@@ -1,12 +1,9 @@
-﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application.Department;
-using DirectoryService.Application.Department.Commands;
+﻿using DirectoryService.Application.Department.Commands;
 using DirectoryService.Application.Department.Queries;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Contracts.Response.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 using Shared.EndpointResults;
 
 namespace DirectoryService.Controllers;

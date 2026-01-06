@@ -1,11 +1,8 @@
-﻿using DirectoryService.Application;
-using DirectoryService.Application.Location;
-using DirectoryService.Application.Location.Commands;
+﻿using DirectoryService.Application.Location.Commands;
 using DirectoryService.Application.Location.Queries;
 using DirectoryService.Contracts.Request.Location;
 using DirectoryService.Contracts.Response.Location;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 using Shared.EndpointResults;
 
 namespace DirectoryService.Controllers;

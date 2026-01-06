@@ -34,11 +34,11 @@ public class DirectoryServiceDbContext : DbContext, IReadDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
     }
 
-    public DbSet<Locations> Location => Set<Locations>();
+    public DbSet<Locations> Locations => Set<Locations>();
 
-    public DbSet<Position> Position => Set<Position>();
+    public DbSet<Position> Positions => Set<Position>();
 
-    public DbSet<Departments> Department => Set<Departments>();
+    public DbSet<Departments> Departments => Set<Departments>();
 
     public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
 

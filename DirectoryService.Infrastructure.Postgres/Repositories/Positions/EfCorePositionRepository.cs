@@ -25,7 +25,7 @@ public class EfCorePositionRepository : IPositionRepository
     {
         try
         {
-            await _dbContext.Position.AddAsync(position, cancellationToken);
+            await _dbContext.Positions.AddAsync(position, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -54,7 +54,7 @@ public class EfCorePositionRepository : IPositionRepository
 
             if (locationsDepartment.Any())
             {
-                var locations = await _dbContext.Position
+                var locations = await _dbContext.Positions
                     .Where(p => locationsDepartment.Contains(p.Id) && p.IsActive == true)
                     .ToListAsync(cancellationToken);
                 return Result.Success<IEnumerable<Position>, Error>(locations);

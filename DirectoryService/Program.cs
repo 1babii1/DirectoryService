@@ -7,6 +7,7 @@ using DirectoryService.Application.Location.Commands;
 using DirectoryService.Application.Location.Queries;
 using DirectoryService.Application.Position;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Infrastructure.Postgres.Backgrounds;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Repositories.Departments;
 using DirectoryService.Infrastructure.Postgres.Repositories.Locations;
@@ -44,6 +45,10 @@ builder.Services.AddScoped<DirectoryServiceDbContext>(_ =>
 
 builder.Services.AddScoped<IReadDbContext, DirectoryServiceDbContext>(_ =>
     new DirectoryServiceDbContext(builder.Configuration.GetConnectionString("DirectoryServiceDb")!));
+
+builder.Services.Configure<ClearDbOptions>(builder.Configuration.GetSection("ClearDbOptions"));
+
+builder.Services.AddHostedService<ClearDbOfDeletedEntities>();
 
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;

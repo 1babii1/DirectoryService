@@ -91,7 +91,7 @@ public class NpgsqlLocationsRepository : ILocationsRepository
         return Result.Success<IEnumerable<LocationId>, Error>(missedIds);
     }
 
-    public async Task<Result<IEnumerable<Domain.Locations.Locations>, Error>> GetOrphanLocationByDepartment(
+    public Task<Result<IEnumerable<Domain.Locations.Locations>, Error>> GetOrphanLocationByDepartment(
         DepartmentId departmentId, CancellationToken cancellationToken) =>
-        Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(new List<Domain.Locations.Locations>());
+        Task.FromResult(Result.Success<IEnumerable<Domain.Locations.Locations>, Error>(new List<Domain.Locations.Locations>()));
 }

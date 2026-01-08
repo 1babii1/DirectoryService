@@ -3,7 +3,6 @@ using Dapper;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
-using DirectoryService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -15,10 +14,11 @@ public class NpgsqlPositionRepository : IPositionRepository
     private readonly ILogger<NpgsqlPositionRepository> _logger;
     private IPositionRepository _positionRepositoryImplementation;
 
-    public NpgsqlPositionRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlPositionRepository> logger)
+    public NpgsqlPositionRepository(IDbConnectionFactory connectionFactory, ILogger<NpgsqlPositionRepository> logger, IPositionRepository positionRepositoryImplementation)
     {
         _connectionFactory = connectionFactory;
         _logger = logger;
+        _positionRepositoryImplementation = positionRepositoryImplementation;
     }
 
     public async Task<Result<Guid, Error>> Add(Position position, CancellationToken cancellationToken)
@@ -60,8 +60,8 @@ public class NpgsqlPositionRepository : IPositionRepository
         }
     }
 
-    public async Task<Result<IEnumerable<Position>, Error>> GetOrphanPositionByDepartment(
+    public Task<Result<IEnumerable<Position>, Error>> GetOrphanPositionByDepartment(
         DepartmentId departmentId,
         CancellationToken cancellationToken) =>
-        Result.Success<IEnumerable<Position>, Error>(new List<Position>());
+        Task.FromResult(Result.Success<IEnumerable<Position>, Error>(new List<Position>()));
 }

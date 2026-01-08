@@ -1,21 +1,46 @@
 ﻿using Dapper;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Response.Department;
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Application.Department.Queries;
 
 public class GetDepartmentsTopByPositionsHandler
 {
     private readonly IDbConnectionFactory _connectionFactory;
+    private readonly ILogger<GetDepartmentsTopByPositionsHandler> _logger;
+    private readonly HybridCache _cache;
 
-    public GetDepartmentsTopByPositionsHandler(IDbConnectionFactory connectionFactory)
+    public GetDepartmentsTopByPositionsHandler(
+        IDbConnectionFactory connectionFactory,
+        ILogger<GetDepartmentsTopByPositionsHandler> logger, HybridCache cache)
     {
         _connectionFactory = connectionFactory;
+        _logger = logger;
+        _cache = cache;
     }
 
     public async Task<List<ReadDepartmentsTopDto>> Handle(CancellationToken cancellationToken)
     {
-        var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+        _logger.LogInformation("Ищем в кэш");
+        var department = await _cache.GetOrCreateAsync(
+            key: $"DepartmentsTopByPositions",
+            factory: async _ =>
+            {
+                _logger.LogInformation("В кеш не нашли идем в БД");
+                return await GetDepartmentsTopByPositionsFromDb(cancellationToken);
+            },
+            options: new() { LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30), },
+            cancellationToken: cancellationToken);
+
+        return department;
+    }
+
+    private async Task<List<ReadDepartmentsTopDto>> GetDepartmentsTopByPositionsFromDb(
+        CancellationToken cancellationToken)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
         var departments = await connection.QueryAsync<ReadDepartmentsTopDto>(
             """

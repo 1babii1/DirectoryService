@@ -4,6 +4,7 @@ using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -25,12 +26,13 @@ public class SoftDeleteDepartmentHandler
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<SoftDeleteDepartmentHandler> _logger;
     private readonly SoftDeleteDepartmentValidation _validation;
+    private readonly HybridCache _cache;
 
     public SoftDeleteDepartmentHandler(
         IDepartmentRepository departmentRepository, ILocationsRepository locationsRepository,
         IPositionRepository positionRepository,
         ITransactionManager transactionManager, ILogger<SoftDeleteDepartmentHandler> logger,
-        SoftDeleteDepartmentValidation validation)
+        SoftDeleteDepartmentValidation validation, HybridCache cache)
     {
         _departmentRepository = departmentRepository;
         _locationsRepository = locationsRepository;
@@ -38,6 +40,7 @@ public class SoftDeleteDepartmentHandler
         _transactionManager = transactionManager;
         _logger = logger;
         _validation = validation;
+        _cache = cache;
     }
 
     public async Task<Result<DepartmentId, Error>> Handle(
@@ -118,7 +121,17 @@ public class SoftDeleteDepartmentHandler
         }
 
         await _transactionManager.SaveChangesAsync(cancellationToken);
-        transactionScope.Commit();
+        var commitResult = transactionScope.Commit();
+        if (commitResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            _logger.LogError("Failed to commit transaction");
+            return commitResult.Error;
+        }
+
+
+        // Удаление из кэша
+        await _cache.RemoveAsync(key: $"department:{department.Value.Id}", cancellationToken);
 
         _logger.LogInformation(
             "Департамент удален{0}{1}",

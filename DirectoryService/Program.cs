@@ -13,6 +13,7 @@ using DirectoryService.Infrastructure.Postgres.Repositories.Positions;
 using DirectoryService.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Shared;
@@ -86,6 +87,16 @@ builder.Services.AddScoped<GetParentDepartmentsHandler>();
 builder.Services.AddScoped<GetChildrenLazyHandler>();
 
 builder.Services.AddScoped<SoftDeleteDepartmentHandler>();
+
+builder.Services.AddStackExchangeRedisCache(setup =>
+{
+    setup.Configuration = "localhost:6379";
+});
+
+builder.Services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
+{
+    LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30),
+});
 
 var app = builder.Build();
 

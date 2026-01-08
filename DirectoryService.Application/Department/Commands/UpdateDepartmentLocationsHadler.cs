@@ -5,6 +5,7 @@ using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -28,17 +29,19 @@ public class UpdateDepartmentLocationsHadler
     private readonly UpdateDepartmentLocationsValidation _validator;
     private readonly ILogger<UpdateDepartmentLocationsHadler> _logger;
     private readonly ITransactionManager _transactionManager;
+    private readonly HybridCache _cache;
 
     public UpdateDepartmentLocationsHadler(
         IDepartmentRepository departmentRepository,
         ILogger<UpdateDepartmentLocationsHadler> logger, ILocationsRepository locationRepository,
-        UpdateDepartmentLocationsValidation validator, ITransactionManager transactionManager)
+        UpdateDepartmentLocationsValidation validator, ITransactionManager transactionManager, HybridCache cache)
     {
         _departmentRepository = departmentRepository;
         _logger = logger;
         _locationRepository = locationRepository;
         _validator = validator;
         _transactionManager = transactionManager;
+        _cache = cache;
     }
 
     public async Task<Result<DepartmentId, Error>> Handle(
@@ -111,6 +114,10 @@ public class UpdateDepartmentLocationsHadler
             _logger.LogError("Failed to commit transaction");
             return commitResult.Error;
         }
+
+        // Удаление из кэша
+        await _cache.RemoveAsync(
+            key: $"department:{department.Value.Id}", cancellationToken);
 
         return department.Value.Id;
     }

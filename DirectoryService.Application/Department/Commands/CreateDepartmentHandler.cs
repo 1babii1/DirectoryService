@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Department.Errors;
 using DirectoryService.Application.Validation;
@@ -162,7 +163,7 @@ public class CreateDepartmentHandler
 
             // Добавление в кэш
             await _cache.SetAsync(
-                key: $"department:{department.Value.Id}",
+                key: GetKey.DepartmentKey.ById(department.Value.Id),
                 value: department.Value,
                 options: new()
                 {

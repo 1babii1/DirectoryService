@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Database;
+﻿using DirectoryService.Application.Cache;
+using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Contracts.Response.Department;
 using DirectoryService.Domain.Locations.ValueObjects;
@@ -55,8 +56,9 @@ public class GetDepartmentByLocationHandler
             return [];
         }
 
+        // Получение из кэша
         var departments = await _cache.GetOrCreateAsync(
-            key: GetKey(request),
+            key: GetKey.DepartmentKey.ByLocation(request.LocationIds, request.Search),
             factory: async _ => await GetDepartmentByLocationFromDb(request, cancellationToken),
             options: new() { LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30), },
             cancellationToken: cancellationToken);
@@ -114,17 +116,5 @@ public class GetDepartmentByLocationHandler
         _logger.LogInformation("Found {Count} departments", departmentDto.Count);
 
         return departmentDto;
-    }
-
-    private string GetKey(GetDepartmentByLocationRequest request)
-    {
-        string partLocation =
-            string.Join(
-                ",",
-                request.LocationIds != null ? request.LocationIds.OrderBy(x => x) : new[] { string.Empty });
-
-        string partSearch = request.Search ?? string.Empty;
-
-        return $"departmentByLocation:{partLocation}|{partSearch}";
     }
 }

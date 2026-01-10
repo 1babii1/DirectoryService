@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
@@ -127,7 +128,7 @@ namespace DirectoryService.Application.Department.Commands
 
             // Удаление из кэша
             await _cache.RemoveAsync(
-                keys: [$"department:{currentDepId.Value}", $"department:{newParentDepId.Value}"], cancellationToken);
+                keys: GetKey.DepartmentKey.ById([newParentDepId.Value, currentDepId.Value]), cancellationToken);
 
             return newParentDepId;
         }

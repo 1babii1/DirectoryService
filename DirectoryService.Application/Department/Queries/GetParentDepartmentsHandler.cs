@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Contracts.Response.Department;
@@ -51,7 +52,7 @@ public class GetParentDepartmentsHandler
         }
 
         var departments = await _cache.GetOrCreateAsync(
-            key: GetKey(request),
+            key: GetKey.DepartmentKey.Parents(request.Page, request.Size, request.Preferch),
             factory: async _ => await GetParentDepartmentsFromDb(request, cancellationToken),
             options: new() { LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30), },
             cancellationToken: cancellationToken);
@@ -122,14 +123,5 @@ public class GetParentDepartmentsHandler
         }
 
         return roots;
-    }
-
-    private string GetKey(GetParentDepartmentsRequest request)
-    {
-        string? partPage = request.Page != null ? request.Page.ToString() : string.Empty;
-        string? partPageSize = request.Size != null ? request.Size.ToString() : string.Empty;
-        string? partLimitChildren = request.Preferch != null ? request.Preferch.ToString() : string.Empty;
-
-        return $"departmentsWithChildren:{partPage}|{partPageSize}|{partLimitChildren}";
     }
 }

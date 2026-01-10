@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Contracts.Response.Department;
@@ -53,7 +54,7 @@ public class GetChildrenLazyHandler
         }
 
         var departments = await _cache.GetOrCreateAsync(
-            key: $"departmentChildren:{request.ParentId}",
+            key: GetKey.DepartmentKey.Children(request.ParentId),
             factory: async _ => await GetChildrenLazyFromDb(request, cancellationToken),
             options: new() { LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30), },
             cancellationToken: cancellationToken);

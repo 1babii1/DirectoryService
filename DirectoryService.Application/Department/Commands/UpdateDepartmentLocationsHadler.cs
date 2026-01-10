@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
@@ -117,7 +118,7 @@ public class UpdateDepartmentLocationsHadler
 
         // Удаление из кэша
         await _cache.RemoveAsync(
-            key: $"department:{department.Value.Id}", cancellationToken);
+            key: GetKey.DepartmentKey.ById(department.Value.Id), cancellationToken);
 
         return department.Value.Id;
     }

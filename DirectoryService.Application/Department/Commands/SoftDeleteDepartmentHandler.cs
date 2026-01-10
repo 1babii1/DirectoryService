@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
@@ -131,7 +132,7 @@ public class SoftDeleteDepartmentHandler
 
 
         // Удаление из кэша
-        await _cache.RemoveAsync(key: $"department:{department.Value.Id}", cancellationToken);
+        await _cache.RemoveAsync(key: GetKey.DepartmentKey.ById(department.Value.Id), cancellationToken);
 
         _logger.LogInformation(
             "Департамент удален{0}{1}",

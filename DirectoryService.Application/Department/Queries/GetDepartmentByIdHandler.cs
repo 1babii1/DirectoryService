@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Database;
+﻿using DirectoryService.Application.Cache;
+using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Contracts.Response.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
@@ -47,7 +48,7 @@ public class GetDepartmentByIdHandler
         }
 
         var department = await _cache.GetOrCreateAsync(
-            key: $"department:{request.DepartmentId}",
+            key: GetKey.DepartmentKey.ById(DepartmentId.FromValue(request.DepartmentId)),
             factory: async _ => await GetDepartmentByIdFromDb(request, cancellationToken),
             options: new() { LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30), },
             cancellationToken: cancellationToken);

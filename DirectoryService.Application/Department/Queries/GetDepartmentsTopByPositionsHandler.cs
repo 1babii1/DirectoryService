@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Response.Department;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -25,7 +26,7 @@ public class GetDepartmentsTopByPositionsHandler
     {
         _logger.LogInformation("Ищем в кэш");
         var department = await _cache.GetOrCreateAsync(
-            key: $"DepartmentsTopByPositions",
+            key: GetKey.DepartmentKey.TopByPositions(),
             factory: async _ =>
             {
                 _logger.LogInformation("В кеш не нашли идем в БД");

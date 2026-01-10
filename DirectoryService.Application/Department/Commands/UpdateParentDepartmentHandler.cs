@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Request.Department;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -27,17 +29,20 @@ namespace DirectoryService.Application.Department.Commands
         private readonly UpdateParentDepartmentValidation _validator;
         private readonly ITransactionManager _transactionManager;
         private readonly ILogger<UpdateParentDepartmentHandler> _logger;
+        private readonly HybridCache _cache;
 
         public UpdateParentDepartmentHandler(
             IDepartmentRepository departmentRepository,
             UpdateParentDepartmentValidation validator,
             ITransactionManager transaction,
-            ILogger<UpdateParentDepartmentHandler> logger)
+            ILogger<UpdateParentDepartmentHandler> logger,
+            HybridCache cache)
         {
             _departmentRepository = departmentRepository;
             _validator = validator;
             _transactionManager = transaction;
             _logger = logger;
+            _cache = cache;
         }
 
         public async Task<Result<DepartmentId, Error>> Handle(
@@ -120,6 +125,10 @@ namespace DirectoryService.Application.Department.Commands
             }
 
             transactionScope.Commit();
+
+            // Удаление из кэша
+            await _cache.RemoveAsync(
+                keys: GetKey.DepartmentKey.ById([newParentDepId.Value, currentDepId.Value]), cancellationToken);
 
             return newParentDepId;
         }

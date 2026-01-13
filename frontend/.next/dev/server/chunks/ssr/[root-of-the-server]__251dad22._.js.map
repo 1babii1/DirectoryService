@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///home/babii/homework/ASP.NET/DirectoryService/frontend/app/departments/page.tsx"],"sourcesContent":["import React from 'react'\n\nexport default function page(): React.JSX.Element {\n    \n\n  return (\n    <div>\n        Departments Page\n    </div>\n  )\n}\n"],"names":[],"mappings":";;;;;;AAEe,SAAS;IAGtB,qBACE,8OAAC;kBAAI;;;;;;AAIT"}}]
+}

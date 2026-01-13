@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///home/babii/homework/ASP.NET/DirectoryService/frontend/app/departments/%5Bid%5D/page.tsx"],"sourcesContent":["import React from 'react'\n\ninterface DepartmentPageProps {\n\tparams: Promise<{ id: string }>\n}\n\nexport default async function DepartmentPage({ params }: DepartmentPageProps) {\n\tconst { id } = await params\n\n    \n\n    return (\n\t\t<div className='p-6'>\n\t\t\t<h1>Department ID: {id}</h1>\n\t\t\t<h2>Просмотр департамента</h2>\n\t\t</div>\n\t)\n}\n"],"names":[],"mappings":";;;;;;AAMe,eAAe,eAAe,EAAE,MAAM,EAAuB;IAC3E,MAAM,EAAE,EAAE,EAAE,GAAG,MAAM;IAIlB,qBACF,8OAAC;QAAI,WAAU;;0BACd,8OAAC;;oBAAG;oBAAgB;;;;;;;0BACpB,8OAAC;0BAAG;;;;;;;;;;;;AAGP"}}]
+}

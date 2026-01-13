@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 124, "column": 0}, "map": {"version":3,"sources":["file:///home/babii/homework/ASP.NET/DirectoryService/frontend/shared/axiosInstance.ts"],"sourcesContent":["import axios from \"axios\";\n\nexport const axiosInstance = axios.create({\n    baseURL: '',\n    headers: {\n        'Content-Type': 'application/json',\n    },\n})"],"names":[],"mappings":";;;;AAAA;;AAEO,MAAM,gBAAgB,kJAAK,CAAC,MAAM,CAAC;IACtC,SAAS;IACT,SAAS;QACL,gBAAgB;IACpB;AACJ"}},
+    {"offset": {"line": 146, "column": 0}, "map": {"version":3,"sources":["file:///home/babii/homework/ASP.NET/DirectoryService/frontend/app/departments/top-positions/route.ts"],"sourcesContent":["import { axiosInstance } from '@/shared/axiosInstance';\nimport { NextResponse } from 'next/server';\n\nexport async function GET() {\n  try {\n    const response = await axiosInstance.get('http://localhost:5129/top-positions').then(res => res.data).catch(() => []);\n    return NextResponse.json(response);\n  } catch (error) {\n    return NextResponse.json({ error: `Backend error encountered: ${error}` }, { status: 500 });\n  }\n}"],"names":[],"mappings":";;;;AAAA;AACA;;;AAEO,eAAe;IACpB,IAAI;QACF,MAAM,WAAW,MAAM,0IAAa,CAAC,GAAG,CAAC,uCAAuC,IAAI,CAAC,CAAA,MAAO,IAAI,IAAI,EAAE,KAAK,CAAC,IAAM,EAAE;QACpH,OAAO,gJAAY,CAAC,IAAI,CAAC;IAC3B,EAAE,OAAO,OAAO;QACd,OAAO,gJAAY,CAAC,IAAI,CAAC;YAAE,OAAO,CAAC,2BAA2B,EAAE,OAAO;QAAC,GAAG;YAAE,QAAQ;QAAI;IAC3F;AACF"}}]
+}

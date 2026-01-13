@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Cache;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Department.Errors;
 using DirectoryService.Application.Validation;
@@ -9,6 +10,7 @@ using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -40,21 +42,24 @@ public class CreateDepartmentValidation : AbstractValidator<CreateDepartmentRequ
 
 public class CreateDepartmentHandler
 {
+    private static readonly SemaphoreSlim _semaphoreSlim = new(3, 3);
     private readonly IDepartmentRepository _departmentRepository;
     private readonly ILocationsRepository _locationRepository;
     private readonly ITransactionManager _transactionManager;
+    private readonly HybridCache _cache;
     private readonly CreateDepartmentValidation _validator;
     private readonly ILogger<CreateDepartmentHandler> _logger;
 
     public CreateDepartmentHandler(IDepartmentRepository departmentRepository, CreateDepartmentValidation validator,
         ILogger<CreateDepartmentHandler> logger, ILocationsRepository locationRepository,
-        ITransactionManager transactionManager)
+        ITransactionManager transactionManager, HybridCache cache)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
         _logger = logger;
         _locationRepository = locationRepository;
         _transactionManager = transactionManager;
+        _cache = cache;
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -138,21 +143,44 @@ public class CreateDepartmentHandler
 
         department.Value.SetDepartmentsLocationsList(departmentLocationsList);
 
-        var result = await _departmentRepository.Add(department.Value, cancellationToken);
-        _logger.LogInformation("Department created successfully");
-        if (result.IsFailure)
+        await _semaphoreSlim.WaitAsync(cancellationToken);
+        try
         {
-            _logger.LogError("Failed to create department");
-            return result.Error;
-        }
+            var result = await _departmentRepository.Add(department.Value, cancellationToken);
+            _logger.LogInformation("Department created successfully");
+            if (result.IsFailure)
+            {
+                _logger.LogError("Failed to create department");
+                return result.Error;
+            }
 
-        var save = await _transactionManager.SaveChangesAsync(cancellationToken);
-        if (save.IsFailure)
+            var save = await _transactionManager.SaveChangesAsync(cancellationToken);
+            if (save.IsFailure)
+            {
+                _logger.LogError("Failed to create department");
+                return save.Error;
+            }
+
+            // Добавление в кэш
+            await _cache.SetAsync(
+                key: GetKey.DepartmentKey.ById(department.Value.Id),
+                value: department.Value,
+                options: new()
+                {
+                    LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30),
+                },
+                cancellationToken: cancellationToken);
+
+            return result;
+        }
+        catch (Exception e)
         {
-            _logger.LogError("Failed to create department");
-            return save.Error;
+            _logger.LogError($"Failed to create department: {e}", e);
+            throw;
         }
-
-        return result;
+        finally
+        {
+            _semaphoreSlim.Release();
+        }
     }
 }

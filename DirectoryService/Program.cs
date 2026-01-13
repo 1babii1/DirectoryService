@@ -13,6 +13,7 @@ using DirectoryService.Infrastructure.Postgres.Repositories.Positions;
 using DirectoryService.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Shared;
@@ -29,6 +30,17 @@ builder.Host.UseSerilog((context, _, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -87,6 +99,16 @@ builder.Services.AddScoped<GetChildrenLazyHandler>();
 
 builder.Services.AddScoped<SoftDeleteDepartmentHandler>();
 
+builder.Services.AddStackExchangeRedisCache(setup =>
+{
+    setup.Configuration = "localhost:6379";
+});
+
+builder.Services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
+{
+    LocalCacheExpiration = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(30),
+});
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
@@ -98,7 +120,10 @@ app.UseMiddleware<ExeptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment() || app.Environment.Is)
 app.MapOpenApi("/openapi/v1/swagger.json");
+
 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1/swagger.json", "DirectoryService"));
+
+app.UseCors();
 
 app.MapControllers();
 

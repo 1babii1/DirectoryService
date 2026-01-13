@@ -31,6 +31,17 @@ builder.Host.UseSerilog((context, _, configuration) =>
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddHttpLogging();
@@ -109,7 +120,10 @@ app.UseMiddleware<ExeptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment() || app.Environment.Is)
 app.MapOpenApi("/openapi/v1/swagger.json");
+
 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1/swagger.json", "DirectoryService"));
+
+app.UseCors();
 
 app.MapControllers();
 
